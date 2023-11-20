@@ -13,7 +13,7 @@ def send_confirmation_email(request, user, password):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
     link = f"http://{domain}/auths/activate/{uid}/{token}/"
-    message = f"Thank you for registering! Please click the link below to confirm your email:\n\n{link}\n\n Your {password = }"
+    message = f"Thank you for registering! Please click the link below to confirm your email:\n\n{link}\n\n Your {password=}"
     print(message)
     subject = "Activate your account"
     from_email = EMAIL_HOST_USER  # Replace with your email address

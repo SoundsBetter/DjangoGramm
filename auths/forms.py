@@ -14,3 +14,9 @@ class EmailOnlyRegistrationForm(forms.ModelForm):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label="login")
     password = forms.CharField(label="password", widget=forms.PasswordInput)
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email")
