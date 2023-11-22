@@ -16,12 +16,9 @@
     {% endif %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ user_form.as_p }}
-        {{ profile_form.as_p }}
-        <button type="submit">Update Profile</button>
+        {{ form.as_p }}
+        <button type="submit">Create post</button>
     </form>
-    <a href="{% url 'posts:create_post' user_id %}">Create post</a>
-    <a href="{% url 'posts:get_all_post_of_user' user_id %}">My posts</a>
     <a href="{% url 'home' %}">Home</a>
     <a href="{% url 'auths:logout' %}">logout</a>
 {% endblock %}

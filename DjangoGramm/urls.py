@@ -22,6 +22,7 @@ from DjangoGramm import views
 from DjangoGramm.settings import MEDIA_URL, MEDIA_ROOT
 
 urlpatterns = [
+    path("posts/", include("posts.urls")),
     path("account/", include("account.urls")),
     path("auths/", include("auths.urls")),
     path("", views.home, name="home"),

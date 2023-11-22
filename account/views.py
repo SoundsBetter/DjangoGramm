@@ -24,11 +24,11 @@ def profile(request, user_id):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, "Профіль було успішно оновлено.")
+            messages.success(request, "Profile was updated successfully.")
             return redirect("account:profile", user_id=user_id)
 
     return render(
         request,
         "account/profile.html",
-        {"user_form": user_form, "profile_form": profile_form},
+        {"user_form": user_form, "profile_form": profile_form, "user_id": user_id},
     )
