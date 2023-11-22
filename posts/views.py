@@ -26,10 +26,14 @@ def create_post(request, user_id):
 @login_required
 def get_all_post_of_user(request, user_id):
     user = User.objects.get(pk=user_id)
-    return render(request, "posts/posts_of_user.html", {"user": user})
+    return render(
+        request, "posts/posts_of_user.html", {"user": user, "user_id": user_id}
+    )
 
 
 @login_required
 def get_all_posts(request):
-    posts = Post.objects.all()
-    return render(request, "posts/feed.html", {"posts": posts})
+    posts = Post.objects.order_by("-created_at")
+    return render(
+        request, "posts/feed.html", {"posts": posts, "user_id": request.user.id}
+    )

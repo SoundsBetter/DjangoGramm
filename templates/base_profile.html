@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <div class="user-profile">
+        <div class="avatar">
+            {% if user.userprofile.avatar %}
+                <img src="{{ user.userprofile.avatar.url }}" alt="User Avatar">
+            {% else %}
+                <img src="{% static 'images/no_image.jpg' %}" alt="Default Avatar">
+            {% endif %}
+        </div>
+        <h3>{{ user }}</h3>
+    </div>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% block main %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Create post</button>
+        </form>
+    {% endblock %}
+{% endblock %}

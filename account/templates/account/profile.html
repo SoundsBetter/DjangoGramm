@@ -1,27 +1,10 @@
-{% extends "base.html" %}
+{% extends "base_profile.html" %}
 {% load static %}
-{% block content %}
-    <h1>Profile {{ user }}</h1>
-    {% if user.userprofile.avatar %}
-        <img src="{{ user.userprofile.avatar.url }}" alt="User Avatar">
-    {% else %}
-        <img src="{% static 'images/no_image.png' %}" alt="Default Avatar">
-    {% endif %}
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+{% block main %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ user_form.as_p }}
         {{ profile_form.as_p }}
         <button type="submit">Update Profile</button>
     </form>
-    <a href="{% url 'posts:create_post' user_id %}">Create post</a>
-    <a href="{% url 'posts:get_all_post_of_user' user_id %}">My posts</a>
-    <a href="{% url 'home' %}">Home</a>
-    <a href="{% url 'auths:logout' %}">logout</a>
 {% endblock %}

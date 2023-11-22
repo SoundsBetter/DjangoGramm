@@ -12,9 +12,6 @@ def profile(request, user_id):
     if request.user.id != user_id:
         return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
 
-    user_form = UserForm(instance=request.user)
-    profile_form = UserProfileForm(instance=request.user.userprofile)
-
     if request.method == "POST":
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = UserProfileForm(
@@ -26,6 +23,9 @@ def profile(request, user_id):
             profile_form.save()
             messages.success(request, "Profile was updated successfully.")
             return redirect("account:profile", user_id=user_id)
+
+    user_form = UserForm(instance=request.user)
+    profile_form = UserProfileForm(instance=request.user.userprofile)
 
     return render(
         request,
