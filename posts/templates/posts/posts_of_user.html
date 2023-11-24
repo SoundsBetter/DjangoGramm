@@ -5,7 +5,9 @@
         <div class="center">
             <div class="post">
                 <div class="image-container">
-                    <img src="{{ post.picture.url }}" alt="Photo">
+                    {% for photo in post.photos.all %}
+                        <a href="{% url 'posts:edit_post' post.id %}"><img src="{{ photo.picture.url }}" alt="Photo"></a>
+                    {% endfor %}
                 </div>
                 <p>{{ post.caption }}</p>
             </div>
