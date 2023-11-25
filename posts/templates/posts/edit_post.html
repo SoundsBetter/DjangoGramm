@@ -2,8 +2,10 @@
 {% load static %}
 {% block main %}
     {% for photo in post.photos.all %}
-        <p class="center"><img class="post image-container" src="{{ photo.picture.url }}" alt="photo"></p>
-        <a href="{% url 'posts:delete_photo' photo.id %}"><button type="submit">delete</button></a>
+        <div class="center">
+        <p><img class="post image-container" src="{{ photo.picture.url }}" alt="photo"></p>
+        <p><a href="{% url 'posts:delete_photo' photo.id %}"><button type="submit">delete</button></a></p>
+        </div>
     {% endfor %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -11,9 +13,11 @@
         {{ photo_form.as_p }}
         <div>
             <label for="hashtags">Hashtags:</label>
-            <input type="text" name="hashtags" id="hashtags" />
+            <input type="text" name="hashtags" id="hashtags"/>
         </div>
         <button type="submit">ОК</button>
     </form>
-    <a class="center" href="{% url 'posts:delete_post' post.id %}"><button type="submit">DELETE</button></a>
+    <a class="center" href="{% url 'posts:delete_post' post.id %}">
+        <button type="submit">DELETE</button>
+    </a>
 {% endblock %}

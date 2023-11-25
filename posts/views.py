@@ -19,8 +19,13 @@ def create_post(request, user_id):
             photo = photo_form.save(commit=False)
             photo.post = post
             photo.save()
+
+            hashtags = request.POST.getlist("hashtags")
+            for hashtag_text in hashtags:
+                hashtag, created = Hashtag.objects.get_or_create(name=hashtag_text)
+                post.hashtags.add(hashtag)
             messages.success(request, "Post was created successfully")
-            return redirect("account:profile", user_id=user_id)
+            return redirect("account:get_all_post_of_user", user_id=user_id)
     else:
         post_form = PostForm()
         photo_form = PhotoForm()
