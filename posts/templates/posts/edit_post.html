@@ -1,10 +1,19 @@
 {% extends "base_profile.html" %}
 {% load static %}
 {% block main %}
+    {% for photo in post.photos.all %}
+        <p class="center"><img class="post image-container" src="{{ photo.picture.url }}" alt="photo"></p>
+        <a href="{% url 'posts:delete_photo' photo.id %}"><button type="submit">delete</button></a>
+    {% endfor %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ post_form.as_p }}
         {{ photo_form.as_p }}
-        <button type="submit">ok</button>
+        <div>
+            <label for="hashtags">Hashtags:</label>
+            <input type="text" name="hashtags" id="hashtags" />
+        </div>
+        <button type="submit">ОК</button>
     </form>
+    <a class="center" href="{% url 'posts:delete_post' post.id %}"><button type="submit">DELETE</button></a>
 {% endblock %}

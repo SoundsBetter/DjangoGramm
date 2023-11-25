@@ -10,15 +10,12 @@
                                                                            alt="Photo"></a>
                     {% endfor %}
                 </div>
-                <p>{{ post.caption }}</p>
-                <form action="{% url 'posts:add_hashtags' post.id%}" method="POST">
-                    {% csrf_token %}
-                    <input type="text" name="hashtags" placeholder="Enter hashtags">
-                    <button type="submit">Add Hashtags</button>
-                </form>
+                <a href="{% url 'posts:edit_post' post.id %}"><p>{{ post.caption }}</p></a>
                 {% for hashtag in post.hashtags.all %}
                     <span class="hashtag">#{{ hashtag.name }}</span>
                 {% endfor %}
+                <p>{{ post.likes.count }} likes</p>
+                <button class="button"><a href="{% url 'posts:like_post' post.id %}">Like</a></button>
             </div>
         </div>
     {% endfor %}

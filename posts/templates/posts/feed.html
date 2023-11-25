@@ -4,14 +4,14 @@
     {% for post in posts %}
         <div class="center">
             <div class="post">
-                <p>
+                <a href="{% url 'account:get_all_post_of_user' post.user.id %}"><p>
                     {% if post.user.userprofile.avatar %}
                         <img class="small_avatar" src="{{ post.user.userprofile.avatar.url }}" alt="avatar">
                     {% else %}
                         <img class="small_avatar" src="{% static 'images/no_image.jpg' %}" alt="Default Avatar">
                     {% endif %}
                     {{ post.user.username }}
-                </p>
+                </p></a>
                 <div class="image-container">
                     {% for photo in post.photos.all %}
                         <a href="{% url 'posts:edit_post' post.id %}"><img src="{{ photo.picture.url }}"

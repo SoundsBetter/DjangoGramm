@@ -10,6 +10,8 @@ class PostForm(forms.ModelForm):
 
 
 class PhotoForm(forms.ModelForm):
+    picture = forms.ImageField(required=False)
+
     class Meta:
         model = Photo
         fields = ("picture",)
