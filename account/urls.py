@@ -9,4 +9,5 @@ urlpatterns = [
     path(
         "<int:user_id>/posts", posts.get_all_post_of_user, name="get_all_post_of_user"
     ),
+    path("", account.get_all_users, name="get_all_users"),
 ]

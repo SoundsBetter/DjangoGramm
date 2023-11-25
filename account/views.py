@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render, redirect
 
@@ -31,4 +32,11 @@ def profile(request, user_id):
         request,
         "account/profile.html",
         {"user_form": user_form, "profile_form": profile_form, "user_id": user_id},
+    )
+
+
+def get_all_users(request):
+    users = User.objects.all()
+    return render(
+        request, "account/all_users.html", {"users": users, "user_id": request.user.id}
     )

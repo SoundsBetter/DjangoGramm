@@ -50,20 +50,24 @@ def get_all_posts(request):
 
 @login_required
 def edit_post(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    if post.user != request.user:
+        messages.error(request, "You can only edit your own posts")
+        return redirect(request.META["HTTP_REFERER"])
+
     if request.method == "POST":
         post_form = PostForm(request.POST)
         photo_form = PhotoForm(request.POST, request.FILES)
         if post_form.is_valid() and photo_form.is_valid():
-            post = Post.objects.get(pk=post_id)
             post.caption = post_form.cleaned_data["caption"]
             post.save()
             photo = photo_form.save(commit=False)
             photo.post = post
             photo.save()
-            messages.success(request, "Пост було успішно відредаговано")
-            return redirect("account:profile", user_id=request.user.id)
+            messages.success(request, "Post updated successfully")
+            return redirect(request.META["HTTP_REFERER"])
     else:
-        post_form = PostForm(instance=Post.objects.get(pk=post_id))
+        post_form = PostForm(instance=post)
         photo_form = PhotoForm()
     return render(
         request,
@@ -87,11 +91,10 @@ def like_post(request, post_id):
 
 @login_required
 def add_hashtags(request, post_id):
-    print("!!!!!")
     if request.method == "POST":
         hashtags = request.POST.get("hashtags")
         post = get_object_or_404(Post, pk=post_id)
         for hashtag_name in hashtags.split():
             hashtag, created = Hashtag.objects.get_or_create(name=hashtag_name)
             post.hashtags.add(hashtag)
-        return redirect("account:get_all_post_of_user", user_id=request.user.id)
+        return redirect("account:get_all_post_of_user", request.user.id)
