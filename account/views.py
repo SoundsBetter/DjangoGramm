@@ -35,6 +35,7 @@ def profile(request, user_id):
     )
 
 
+@login_required
 def get_all_users(request):
     users = User.objects.all()
     return render(

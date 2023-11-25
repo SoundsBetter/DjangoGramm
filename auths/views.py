@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -18,13 +19,22 @@ def register(request):
             email = form.cleaned_data["email"]
             password = User.objects.make_random_password()
             username = email
-            user = User(email=email)
-            user.username = username
-            user.set_password(password)
-            user.is_active = False
-            user.save()
-            send_confirmation_email(request, user, password)
-            return redirect("home")
+
+            try:
+                user = User.objects.get(email=email)
+                messages.error(request, f"User with {email=} already exists")
+                return redirect("home")
+            except User.DoesNotExist:
+                user = User(email=email)
+                user.username = username
+                user.set_password(password)
+                user.is_active = False
+                user.save()
+                send_confirmation_email(request, user, password)
+                messages.success(
+                    request, "Please check your email and click the activation link"
+                )
+                return redirect("home")
     else:
         form = EmailOnlyRegistrationForm()
     return render(request, "auths/registration.html", {"form": form})
@@ -39,7 +49,8 @@ def activate(request, uidb64, token):
         user_profile = UserProfile(user_id=user.id)
         user.save()
         user_profile.save()
-        return HttpResponse("<h1>Activation success</h1>")
+        messages.success(request, "Account activated successfully")
+        return redirect("auths:login")
     else:
         return HttpResponse("<h1>Activation failure</h1>")
 
