@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 
-from posts.forms import PostForm, PhotoForm
+from posts.forms import PostForm, PhotoForm, PhotoFormEdit
 from posts.models import Post, Like, Hashtag, Photo
 
 
@@ -62,7 +62,7 @@ def edit_post(request, post_id):
 
     if request.method == "POST":
         post_form = PostForm(request.POST)
-        photo_form = PhotoForm(request.POST, request.FILES)
+        photo_form = PhotoFormEdit(request.POST, request.FILES)
         if post_form.is_valid():
             post.caption = post_form.cleaned_data["caption"]
             post.save()
@@ -71,15 +71,15 @@ def edit_post(request, post_id):
                 photo.post = post
                 photo.save()
 
-            hashtags = request.POST.getlist("hashtags")
-            for hashtag_text in hashtags:
-                hashtag, created = Hashtag.objects.get_or_create(name=hashtag_text)
-                post.hashtags.add(hashtag)
+            if hashtags := request.POST.get("hashtags").split():
+                for hashtag_text in hashtags:
+                    hashtag, created = Hashtag.objects.get_or_create(name=hashtag_text)
+                    post.hashtags.add(hashtag)
             messages.success(request, "Post updated successfully")
             return redirect("account:get_all_post_of_user", user_id=request.user.id)
     else:
         post_form = PostForm(instance=post)
-        photo_form = PhotoForm()
+        photo_form = PhotoFormEdit()
     return render(
         request,
         "posts/edit_post.html",
