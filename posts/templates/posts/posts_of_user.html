@@ -6,10 +6,19 @@
             <div class="post">
                 <div class="image-container">
                     {% for photo in post.photos.all %}
-                        <a href="{% url 'posts:edit_post' post.id %}"><img src="{{ photo.picture.url }}" alt="Photo"></a>
+                        <a href="{% url 'posts:edit_post' post.id %}"><img src="{{ photo.picture.url }}"
+                                                                           alt="Photo"></a>
                     {% endfor %}
                 </div>
                 <p>{{ post.caption }}</p>
+                <form action="{% url 'posts:add_hashtags' post.id%}" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="hashtags" placeholder="Enter hashtags">
+                    <button type="submit">Add Hashtags</button>
+                </form>
+                {% for hashtag in post.hashtags.all %}
+                    <span class="hashtag">#{{ hashtag.name }}</span>
+                {% endfor %}
             </div>
         </div>
     {% endfor %}

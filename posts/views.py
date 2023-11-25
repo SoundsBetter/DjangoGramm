@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 
 from posts.forms import PostForm, PhotoForm
-from posts.models import Post, Like
+from posts.models import Post, Like, Hashtag
 
 
 @login_required
@@ -83,3 +83,15 @@ def like_post(request, post_id):
     like.save()
     messages.success(request, "You liked it.")
     return redirect("posts:feed")
+
+
+@login_required
+def add_hashtags(request, post_id):
+    print("!!!!!")
+    if request.method == "POST":
+        hashtags = request.POST.get("hashtags")
+        post = get_object_or_404(Post, pk=post_id)
+        for hashtag_name in hashtags.split():
+            hashtag, created = Hashtag.objects.get_or_create(name=hashtag_name)
+            post.hashtags.add(hashtag)
+        return redirect("account:get_all_post_of_user", user_id=request.user.id)

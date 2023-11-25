@@ -19,8 +19,11 @@
                     {% endfor %}
                 </div>
                 <p>{{ post.caption }}</p>
-                <p>{{ post.likes.count }}likes</p>
-                <button><a href="{% url 'posts:like_post' post.id %}">Like</a></button>
+                {% for hashtag in post.hashtags.all %}
+                    <span class="hashtag">#{{ hashtag.name }}</span>
+                {% endfor %}
+                <p>{{ post.likes.count }} likes</p>
+                <button class="button"><a href="{% url 'posts:like_post' post.id %}">Like</a></button>
             </div>
         </div>
     {% endfor %}

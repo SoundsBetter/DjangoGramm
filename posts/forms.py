@@ -13,3 +13,7 @@ class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
         fields = ("picture",)
+
+
+class HashtagForm(forms.Form):
+    hashtags = forms.CharField(max_length=50)

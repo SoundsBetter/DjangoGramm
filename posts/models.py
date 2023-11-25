@@ -16,8 +16,13 @@ class Post(models.Model):
     caption = models.CharField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, through="Like", related_name="liked_posts")
+    hashtags = models.ManyToManyField("Hashtag", blank=True)
 
 
 class Photo(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="photos")
     picture = models.ImageField(upload_to=f"pictures/")
+
+
+class Hashtag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
