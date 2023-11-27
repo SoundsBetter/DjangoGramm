@@ -2,17 +2,23 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponseBase
 from django.shortcuts import render, redirect
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 
 from account.models import UserProfile
 from auths.forms import EmailOnlyRegistrationForm, LoginForm
+from auths.settings import (
+    USER_EXISTS_MSG,
+    REG_SUCCESS_MSG,
+    ACTIVATE_SUCCESS_MSG,
+    ACTIVATE_ERROR_MSG,
+)
 from auths.utils import send_confirmation_email
 
 
-def register(request):
+def register(request: HttpRequest) -> HttpResponseBase:
     if request.method == "POST":
         form = EmailOnlyRegistrationForm(request.POST)
         if form.is_valid():
@@ -21,8 +27,8 @@ def register(request):
             username = email
 
             try:
-                user = User.objects.get(email=email)
-                messages.error(request, f"User with {email=} already exists")
+                User.objects.get(email=email)
+                messages.error(request, USER_EXISTS_MSG % email)
                 return redirect("home")
             except User.DoesNotExist:
                 user = User(email=email)
@@ -31,16 +37,14 @@ def register(request):
                 user.is_active = False
                 user.save()
                 send_confirmation_email(request, user, password)
-                messages.success(
-                    request, "Please check your email and click the activation link"
-                )
+                messages.success(request, REG_SUCCESS_MSG)
                 return redirect("home")
     else:
         form = EmailOnlyRegistrationForm()
     return render(request, "auths/registration.html", {"form": form})
 
 
-def activate(request, uidb64, token):
+def activate(request: HttpRequest, uidb64: str, token: str) -> HttpResponseBase:
     uid = force_str(urlsafe_base64_decode(uidb64))
     user = User.objects.get(pk=uid)
 
@@ -49,13 +53,14 @@ def activate(request, uidb64, token):
         user_profile = UserProfile(user_id=user.id)
         user.save()
         user_profile.save()
-        messages.success(request, "Account activated successfully")
+        messages.success(request, ACTIVATE_SUCCESS_MSG)
         return redirect("auths:login")
     else:
-        return HttpResponse("<h1>Activation failure</h1>")
+        messages.error(request, ACTIVATE_ERROR_MSG)
+        return redirect("home")
 
 
-def login_view(request):
+def login_view(request: HttpRequest) -> HttpResponseBase:
     if request.method == "POST":
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
@@ -70,6 +75,6 @@ def login_view(request):
     return render(request, "auths/login.html", {"form": form})
 
 
-def logout_view(request):
+def logout_view(request: HttpRequest) -> HttpResponseBase:
     logout(request)
     return redirect("home")

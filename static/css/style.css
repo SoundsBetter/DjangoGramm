@@ -176,21 +176,39 @@ h3 {
 
 .list_of_users p {
     display: flex;
-    align-items: center; /* Вирівнюємо аватарки вертикально */
+    align-items: center;
     margin-bottom: 10px;
 }
 
 .list_of_users a {
     text-decoration: none;
-    color: #000; /* Змінюємо колір тексту на чорний */
-    margin-left: 10px; /* Додаємо відступ між аватаркою та текстом */
+    color: #000;
+    margin-left: 10px;
     display: flex;
-    align-items: center; /* Вирівнюємо текст вертикально по центру відносно аватарки */
+    align-items: center;
 }
 
 .list_of_users img.small_avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    margin-right: 10px; /* Додаємо відступ між аватарками */
+    margin-right: 10px;
+}
+
+
+.message-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f3bebe;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+.message-success {
+    color: #43721c;
+    background-color: #daf8d7;
+    border-color: #c6f5c7;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
 }

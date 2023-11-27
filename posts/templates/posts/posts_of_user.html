@@ -6,16 +6,21 @@
             <div class="post">
                 <div class="image-container">
                     {% for photo in post.photos.all %}
-                        <a href="{% url 'posts:edit_post' post.id %}"><img src="{{ photo.picture.url }}"
-                                                                           alt="Photo"></a>
+                        <img src="{{ photo.picture.url }}" alt="Photo">
                     {% endfor %}
                 </div>
-                <a href="{% url 'posts:edit_post' post.id %}"><p>{{ post.caption }}</p></a>
+                <a href="{% url 'posts:edit_post' post.id %}">
+                    <p>{{ post.caption }}</p></a>
                 {% for hashtag in post.hashtags.all %}
                     <span class="hashtag">#{{ hashtag.name }}</span>
                 {% endfor %}
                 <p>{{ post.likes.count }} likes</p>
-                <button class="button"><a href="{% url 'posts:like_post' post.id %}">Like</a></button>
+                <button class="button"><a
+                        href="{% url 'posts:like_post' post.id %}">Like</a>
+                </button>
+                <button class="button">
+                    <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
+                </button>
             </div>
         </div>
     {% endfor %}

@@ -2,11 +2,15 @@
 {% load static %}
 {% block main %}
     {% for user in users %}
-        <p class="list_of_users"><a href="{% url 'account:get_all_post_of_user' user.id %}">
+        <p class="list_of_users"><a
+                href="{% url 'posts:get_user_posts' user.id %}">
             {% if user.userprofile.avatar %}
-                <img class="small_avatar" src="{{ user.userprofile.avatar.url }}" alt="avatar">
+                <img class="small_avatar"
+                     src="{{ user.userprofile.avatar.url }}" alt="avatar">
             {% else %}
-                <img class="small_avatar" src="{% static 'images/no_image.jpg' %}" alt="Default Avatar">
+                <img class="small_avatar"
+                     src="{% static 'images/no_avatar.jpg' %}"
+                     alt="Default Avatar">
             {% endif %}
             {{ user.username }}
         </a></p>
