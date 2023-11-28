@@ -65,7 +65,7 @@ def get_feed(request: HttpRequest) -> HttpResponseBase:
 
 @login_required
 def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    post = Post.objects.get(pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
     if post.user != request.user:
         messages.error(request, POST_EDIT_DENIED_MSG)
         return redirect(request.META["HTTP_REFERER"])
