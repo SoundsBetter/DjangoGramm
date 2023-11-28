@@ -12,7 +12,8 @@ from auths.forms import UserForm
 @login_required
 def profile(request: HttpRequest, user_id: int) -> HttpResponseBase:
     if request.user.id != user_id:
-        return HttpResponseForbidden(NOT_HAVE_ACCESS)
+        messages.error(request, NOT_HAVE_ACCESS)
+        return redirect(request.META["HTTP_REFERER"])
 
     if request.method == "POST":
         user_form = UserForm(request.POST, instance=request.user)

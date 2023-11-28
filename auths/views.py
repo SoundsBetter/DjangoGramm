@@ -53,8 +53,11 @@ def activate(request: HttpRequest, uidb64: str, token: str) -> HttpResponseBase:
         user_profile = UserProfile(user_id=user.id)
         user.save()
         user_profile.save()
+
+        login(request, user)
+
         messages.success(request, ACTIVATE_SUCCESS_MSG)
-        return redirect("auths:login")
+        return redirect("account:profile", user_id=user.id)
     else:
         messages.error(request, ACTIVATE_ERROR_MSG)
         return redirect("home")

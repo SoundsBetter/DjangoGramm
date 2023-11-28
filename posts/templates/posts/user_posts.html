@@ -12,7 +12,7 @@
                 <a href="{% url 'posts:edit_post' post.id %}">
                     <p>{{ post.caption }}</p></a>
                 {% for hashtag in post.hashtags.all %}
-                    <span class="hashtag">#{{ hashtag.name }}</span>
+                    <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span class="hashtag">#{{ hashtag.name }}</span></a>
                 {% endfor %}
                 <p>{{ post.likes.count }} likes</p>
                 <button class="button"><a

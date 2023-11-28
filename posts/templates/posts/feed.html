@@ -23,7 +23,8 @@
                 </div>
                 <p>{{ post.caption }}</p>
                 {% for hashtag in post.hashtags.all %}
-                    <span class="hashtag">#{{ hashtag.name }}</span>
+                    <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
+                            class="hashtag">#{{ hashtag.name }}</span></a>
                 {% endfor %}
                 <p>{{ post.likes.count }} likes</p>
                 <button class="button"><a

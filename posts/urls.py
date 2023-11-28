@@ -39,4 +39,9 @@ urlpatterns = [
         views.like_post,
         name="like_post",
     ),
+    path(
+        "hashtag/<int:hashtag_id>/",
+        views.get_posts_by_hashtag,
+        name="posts_by_hashtag",
+    ),
 ]

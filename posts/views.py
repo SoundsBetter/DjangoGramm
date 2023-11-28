@@ -51,7 +51,7 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
 def get_user_posts(request: HttpRequest, user_id: int) -> HttpResponseBase:
     user = User.objects.get(pk=user_id)
     return render(
-        request, "posts/posts_of_user.html", {"user": user, "user_id": user_id}
+        request, "posts/user_posts.html", {"user": user, "user_id": user_id}
     )
 
 
@@ -127,3 +127,13 @@ def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
 def delete_photo(request: HttpRequest, photo_id: int) -> HttpResponseBase:
     Photo.objects.get(pk=photo_id).delete()
     return redirect(request.META["HTTP_REFERER"])
+
+
+@login_required
+def get_posts_by_hashtag(
+    request: HttpRequest, hashtag_id: int
+) -> HttpResponseBase:
+    posts = Post.objects.filter(hashtags__id=hashtag_id).order_by("-created_at")
+    return render(
+        request, "posts/feed.html", {"posts": posts, "user_id": request.user.id}
+    )
