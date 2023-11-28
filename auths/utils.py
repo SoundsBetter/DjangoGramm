@@ -11,7 +11,7 @@ from django.utils.http import urlsafe_base64_encode
 from DjangoGramm.settings import EMAIL_HOST_USER
 from auths.settings import EMAIL_MSG, EMAIL_SUBJECT
 
-UserType = t.Type[User]
+UserType = t.TypeVar("UserType", bound=User)
 
 
 def send_confirmation_email(
