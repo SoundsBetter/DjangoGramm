@@ -51,7 +51,9 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
 def get_user_posts(request: HttpRequest, user_id: int) -> HttpResponseBase:
     user = User.objects.get(pk=user_id)
     return render(
-        request, "posts/user_posts.html", {"user": user, "user_id": user_id}
+        request,
+        "posts/user_posts.html",
+        {"user": user, "user_id": user_id},
     )
 
 
@@ -59,7 +61,9 @@ def get_user_posts(request: HttpRequest, user_id: int) -> HttpResponseBase:
 def get_feed(request: HttpRequest) -> HttpResponseBase:
     posts = Post.objects.order_by("-created_at")
     return render(
-        request, "posts/feed.html", {"posts": posts, "user_id": request.user.id}
+        request,
+        "posts/feed.html",
+        {"posts": posts, "user_id": request.user.id},
     )
 
 
@@ -109,12 +113,12 @@ def like_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
     post = get_object_or_404(Post, pk=post_id)
     if request.user in post.likes.all():
         messages.error(request, LIKE_DENIED_MSG)
-        return redirect(request.META["HTTP_REFERER"])
+        return redirect(request.META.get("HTTP_REFERER", "home"))
 
     like = Like(post=post, user=request.user)
     like.save()
     messages.success(request, LIKE_IT_MSG)
-    return redirect(request.META["HTTP_REFERER"])
+    return redirect(request.META.get("HTTP_REFERER", "home"))
 
 
 @login_required
@@ -126,7 +130,7 @@ def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
 @login_required
 def delete_photo(request: HttpRequest, photo_id: int) -> HttpResponseBase:
     Photo.objects.get(pk=photo_id).delete()
-    return redirect(request.META["HTTP_REFERER"])
+    return redirect(request.META.get("HTTP_REFERER", "home"))
 
 
 @login_required
@@ -135,5 +139,7 @@ def get_posts_by_hashtag(
 ) -> HttpResponseBase:
     posts = Post.objects.filter(hashtags__id=hashtag_id).order_by("-created_at")
     return render(
-        request, "posts/feed.html", {"posts": posts, "user_id": request.user.id}
+        request,
+        "posts/feed.html",
+        {"posts": posts, "user_id": request.user.id},
     )

@@ -13,7 +13,7 @@ from auths.forms import UserForm
 def profile(request: HttpRequest, user_id: int) -> HttpResponseBase:
     if request.user.id != user_id:
         messages.error(request, NOT_HAVE_ACCESS)
-        return redirect(request.META["HTTP_REFERER"])
+        return redirect(request.META.get("HTTP_REFERER", "home"))
 
     if request.method == "POST":
         user_form = UserForm(request.POST, instance=request.user)

@@ -28,37 +28,42 @@ def register(request: HttpRequest) -> HttpResponseBase:
 
             try:
                 User.objects.get(email=email)
-                messages.error(request, USER_EXISTS_MSG % email)
-                return redirect("home")
             except User.DoesNotExist:
                 user = User(email=email)
                 user.username = username
                 user.set_password(password)
                 user.is_active = False
                 user.save()
-                send_confirmation_email(request, user, password)
+                send_confirmation_email(user=user, password=password)
                 messages.success(request, REG_SUCCESS_MSG)
                 return redirect("home")
+            messages.error(request, USER_EXISTS_MSG % email)
+            return redirect("home")
     else:
         form = EmailOnlyRegistrationForm()
-    return render(request, "auths/registration.html", {"form": form})
+    return render(request, "auths/register.html", {"form": form})
 
 
 def activate(request: HttpRequest, uidb64: str, token: str) -> HttpResponseBase:
-    uid = force_str(urlsafe_base64_decode(uidb64))
-    user = User.objects.get(pk=uid)
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
 
-    if default_token_generator.check_token(user, token):
-        user.is_active = True
-        user_profile = UserProfile(user_id=user.id)
-        user.save()
-        user_profile.save()
+        if default_token_generator.check_token(user, token):
+            user.is_active = True
+            user_profile = UserProfile(user_id=user.id)
+            user.save()
+            user_profile.save()
 
-        login(request, user)
+            login(request, user)
 
-        messages.success(request, ACTIVATE_SUCCESS_MSG)
-        return redirect("account:profile", user_id=user.id)
-    else:
+            messages.success(request, ACTIVATE_SUCCESS_MSG)
+            return redirect("account:profile", user_id=user.id)
+        else:
+            messages.error(request, ACTIVATE_ERROR_MSG)
+            return redirect("home")
+
+    except User.DoesNotExist:
         messages.error(request, ACTIVATE_ERROR_MSG)
         return redirect("home")
 

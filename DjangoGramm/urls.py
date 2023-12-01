@@ -35,3 +35,5 @@ urlpatterns = [
 
 if DEBUG:
     urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
+
+handler404 = "DjangoGramm.views.handler404"
