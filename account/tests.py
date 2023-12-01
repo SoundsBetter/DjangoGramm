@@ -44,7 +44,8 @@ class AccountsViewTests(TestCase):
             reverse("account:profile", kwargs={"user_id": another_user.id})
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("home"))
+
+        self.assertEqual(getattr(response, "url", None), reverse("home"))
 
     def test_profile_edit_valid(self):
         self.client.login(username="test_user", password="test_password")

@@ -50,7 +50,7 @@ class PostsViewTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.url,
+            getattr(response, "url", None),
             reverse("posts:get_user_posts", kwargs={"user_id": self.user.id}),
         )
 
@@ -143,7 +143,7 @@ class PostsViewTests(TestCase):
 
         self.assertFalse(Photo.objects.filter(pk=photo.id).exists())
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("home"))
+        self.assertEqual(getattr(response, "url", None), reverse("home"))
 
     def test_get_posts_by_hashtag(self):
         another_hashtag = Hashtag.objects.create(name="another_hashtag")

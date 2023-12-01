@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden, HttpResponseBase, HttpRequest
+from django.http import HttpResponseBase, HttpRequest
 from django.shortcuts import render, redirect
 
 from account.forms import UserProfileForm

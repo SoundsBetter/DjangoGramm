@@ -30,7 +30,7 @@ class AuthsViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(self.user.is_authenticated)
         self.assertEqual(
-            response.url,
+            getattr(response, "url", None),
             reverse("account:profile", kwargs={"user_id": self.user.id}),
         )
 
@@ -46,7 +46,7 @@ class AuthsViewsTests(TestCase):
         self.assertFalse(user.is_active)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("home"))
+        self.assertEqual(getattr(response, "url", None), reverse("home"))
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -96,7 +96,7 @@ class AuthsViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.url,
+            getattr(response, "url", None),
             reverse("account:profile", kwargs={"user_id": user.id}),
         )
 
@@ -123,7 +123,7 @@ class AuthsViewsTests(TestCase):
             self.assertFalse(user.is_active)
 
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, reverse("home"))
+            self.assertEqual(getattr(response, "url", None), reverse("home"))
 
             messages = list(get_messages(response.wsgi_request))
             self.assertEqual(
