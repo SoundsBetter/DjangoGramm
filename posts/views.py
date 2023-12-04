@@ -28,7 +28,7 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
             photo.post = post
             photo.save()
 
-            if hashtags := request.POST.get("hashtags").split():
+            if hashtags := request.POST.get("hashtags").split():  # type: ignore
                 for hashtag_text in hashtags:
                     hashtag, _ = Hashtag.objects.get_or_create(
                         name=hashtag_text
@@ -85,7 +85,7 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
                 photo.post = post
                 photo.save()
 
-            if hashtags := request.POST.get("hashtags").split():
+            if hashtags := request.POST.get("hashtags").split():  # type: ignore
                 for hashtag_text in hashtags:
                     hashtag, _ = Hashtag.objects.get_or_create(
                         name=hashtag_text
