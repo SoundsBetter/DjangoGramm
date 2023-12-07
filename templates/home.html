@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ block.super }} Home
+{% endblock %}
+{% block content %}
+    <div class="home_vertical"></div>
+    <p class="center">
+        <button><a href="{% url 'auths:login' %}">login</a></button>
+    </p>
+    <p class="center">
+        <button><a href="{% url 'auths:register' %}">registration</a></button>
+    </p>
+{% endblock %}

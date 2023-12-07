@@ -1,0 +1,28 @@
+{% extends "base_profile.html" %}
+{% load static %}
+{% block main %}
+    {% for post in user.posts.all %}
+        <div class="center">
+            <div class="post">
+                <div class="image-container">
+                    {% for photo in post.photos.all %}
+                        <img src="{{ photo.picture.url }}" alt="Photo">
+                    {% endfor %}
+                </div>
+                <a href="{% url 'posts:edit_post' post.id %}">
+                    <p>{{ post.caption }}</p></a>
+                {% for hashtag in post.hashtags.all %}
+                    <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span class="hashtag">#{{ hashtag.name }}</span></a>
+                {% endfor %}
+                <p>{{ post.likes.count }} likes</p>
+                <button class="button"><a
+                        href="{% url 'posts:like_post' post.id %}">Like</a>
+                </button>
+                <button class="button">
+                    <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
+                </button>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}
