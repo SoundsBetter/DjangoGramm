@@ -22,4 +22,4 @@ def send_confirmation_email(user: UserType, password: str) -> None:
         from_email=EMAIL_HOST_USER,
         recipient_list=[user.email],
     )
-    # print(password, link)
+    print(password, link)

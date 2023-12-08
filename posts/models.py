@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from posts.utils import user_directory_path
+from DjangoGramm.utils import user_directory_path
 
 
 class Like(models.Model):
