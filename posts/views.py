@@ -2,16 +2,18 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Prefetch, Count
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpRequest, HttpResponseBase
+from django.http import HttpRequest, HttpResponseBase, HttpResponse
 
 from posts.forms import PostForm, PhotoForm, PhotoFormEdit
-from posts.models import Post, Like, Photo
+from posts.models import Post, Photo
 from posts.settings import (
     POST_CREATED_MSG,
     POST_EDIT_DENIED_MSG,
     POST_EDIT_SUCCESS_MSG,
-    LIKE_DENIED_MSG,
+    UNLIKE_DENIED_MSG,
     LIKE_IT_MSG,
 )
 from posts.utils import hashtag_handler
@@ -90,7 +92,7 @@ def get_user_posts(request: HttpRequest, user_id: int) -> HttpResponseBase:
             Prefetch(
                 "posts",
                 queryset=Post.objects.prefetch_related(
-                    "photos", "likes", "hashtags"
+                    "photos", "hashtags"
                 ).annotate(likes_count=Count("likes")),
             )
         )
@@ -108,8 +110,7 @@ def get_feed(request: HttpRequest) -> HttpResponseBase:
     posts = (
         Post.objects.all()
         .select_related("user__userprofile")
-        .prefetch_related("photos")
-        .prefetch_related("hashtags")
+        .prefetch_related("photos", "hashtags")
         .annotate(likes_count=Count("likes"))
         .order_by("-created_at")
     )
@@ -123,13 +124,12 @@ def get_feed(request: HttpRequest) -> HttpResponseBase:
 @login_required
 def like_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
     post = get_object_or_404(Post, pk=post_id)
-    if request.user in post.likes.all():
-        messages.error(request, LIKE_DENIED_MSG)
-        return redirect(request.META.get("HTTP_REFERER", "home"))
-
-    like = Like(post=post, user=request.user)
-    like.save()
-    messages.success(request, LIKE_IT_MSG)
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        messages.error(request, UNLIKE_DENIED_MSG)
+    else:
+        post.likes.add(request.user)
+        messages.success(request, LIKE_IT_MSG)
     return redirect(request.META.get("HTTP_REFERER", "home"))
 
 
@@ -149,9 +149,26 @@ def delete_photo(request: HttpRequest, photo_id: int) -> HttpResponseBase:
 def get_posts_by_hashtag(
     request: HttpRequest, hashtag_id: int
 ) -> HttpResponseBase:
-    posts = Post.objects.filter(hashtags__id=hashtag_id).order_by("-created_at")
+    posts = (
+        Post.objects.select_related("user__userprofile")
+        .filter(hashtags__id=hashtag_id)
+        .prefetch_related("photos", "hashtags")
+        .annotate(likes_count=Count("likes"))
+        .order_by("-created_at")
+    )
     return render(
         request,
         "posts/feed.html",
         {"posts": posts, "user_id": request.user.id},
     )
+
+
+def temp(request):
+    post = get_object_or_404(Post, pk=1)
+    result = Post.objects.filter(id=post.id, likes__user=request.user.id)
+    return HttpResponse(f"TEMP{result}")
+
+
+@receiver(post_delete, sender=Photo)
+def delete_post_media_files(sender, instance, **kwargs):
+    instance.picture.delete(save=False)

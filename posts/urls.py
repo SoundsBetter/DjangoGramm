@@ -44,4 +44,5 @@ urlpatterns = [
         views.get_posts_by_hashtag,
         name="posts_by_hashtag",
     ),
+    path("", views.temp),
 ]

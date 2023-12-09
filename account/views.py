@@ -1,10 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.http import HttpResponseBase, HttpRequest
 from django.shortcuts import render, redirect
 
 from account.forms import UserProfileForm
+from account.models import UserProfile
 from account.settings import NOT_HAVE_ACCESS, PROFILE_UPD_SUCCESS
 from auths.forms import UserForm
 
@@ -48,3 +51,14 @@ def get_all_users(request: HttpRequest) -> HttpResponseBase:
         "account/all_users.html",
         {"users": users, "user_id": request.user.id},
     )
+
+
+@login_required
+def delete_user(request: HttpRequest, user_id: int) -> HttpResponseBase:
+    User.objects.get(pk=user_id).delete()
+    return redirect("home")
+
+
+@receiver(post_delete, sender=UserProfile)
+def delete_user_media_files(sender, instance, **kwargs):
+    instance.avatar.delete(save=False)

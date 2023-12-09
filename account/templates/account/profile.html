@@ -28,4 +28,5 @@
         {{ profile_form.as_p }}
         <button type="submit">Update Profile</button>
     </form>
+    <a href="{% url 'account:delete_user' user.id %}"><button type="submit">DELETE USER</button></a>
 {% endblock %}

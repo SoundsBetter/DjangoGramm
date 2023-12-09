@@ -8,7 +8,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from posts.models import Post, Hashtag, Photo
-from posts.settings import LIKE_IT_MSG, LIKE_DENIED_MSG
+from posts.settings import LIKE_IT_MSG, UNLIKE_DENIED_MSG
 
 
 # Create your tests here.
@@ -112,12 +112,12 @@ class PostsViewTests(TestCase):
         )
 
         self.post_1.refresh_from_db()
-        self.assertEqual(self.post_1.likes.count(), 1)
+        self.assertEqual(self.post_1.likes.count(), 0)
 
         messages = list(get_messages(response.wsgi_request))
 
         self.assertEqual(str(messages[0]), LIKE_IT_MSG)
-        self.assertEqual(str(messages[1]), LIKE_DENIED_MSG)
+        self.assertEqual(str(messages[1]), UNLIKE_DENIED_MSG)
 
     def test_delete_post(self):
         self.assertTrue(Post.objects.filter(pk=self.post_1.id).exists())
