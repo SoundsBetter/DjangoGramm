@@ -18,9 +18,11 @@
                 <button class="button"><a
                         href="{% url 'posts:like_post' post.id %}">Like</a>
                 </button>
-                <button class="button">
-                    <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
-                </button>
+                {% if post.user == request.user %}
+                    <button class="button">
+                        <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
+                    </button>
+                {% endif %}
             </div>
         </div>
     {% endfor %}
