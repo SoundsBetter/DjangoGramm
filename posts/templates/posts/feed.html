@@ -30,7 +30,7 @@
                     <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
                             class="hashtag">#{{ hashtag.name }}</span></a>
                 {% endfor %}
-                <p>{{ post.likes_count }} likes</p>
+                <p>{{ post.likes.count }} likes</p>
                 <button class="button"><a
                         href="{% url 'posts:like_post' post.id %}">Like</a>
                 </button>

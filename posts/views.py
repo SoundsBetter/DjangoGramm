@@ -2,13 +2,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Prefetch, Count
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, pre_delete
 from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponseBase, HttpResponse
 
 from posts.forms import PostForm, PhotoForm, PhotoFormEdit
-from posts.models import Post, Photo
+from posts.models import Post, Photo, Like
 from DjangoGramm.text_messages import (
     POST_CREATED_MSG,
     POST_EDIT_DENIED_MSG,
@@ -130,11 +130,11 @@ def get_feed(request: HttpRequest) -> HttpResponseBase:
 @login_required
 def like_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
     post = get_object_or_404(Post, pk=post_id)
-    if post.likes.filter(id=request.user.id).exists():
-        post.likes.remove(request.user)
+    if post.likes.filter(user_id=request.user.id).exists():
+        Like.objects.filter(post_id=post_id, user_id=request.user.id).delete()
         messages.error(request, UNLIKE_DENIED_MSG)
     else:
-        post.likes.add(request.user)
+        Like.objects.create(post_id=post_id, user_id=request.user.id)
         messages.success(request, LIKE_IT_MSG)
     return redirect(request.META.get("HTTP_REFERER", "home"))
 
@@ -158,8 +158,7 @@ def get_posts_by_hashtag(
     posts = (
         Post.objects.select_related("user__userprofile")
         .filter(hashtags__id=hashtag_id)
-        .prefetch_related("photos", "hashtags")
-        .annotate(likes_count=Count("likes"))
+        .prefetch_related("photos", "hashtags", "likes")
         .order_by("-created_at")
     )
     return render(
