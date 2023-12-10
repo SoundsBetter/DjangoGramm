@@ -4,7 +4,7 @@ from posts.models import Post, Photo
 
 
 class PostForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea)
+    content = forms.CharField(widget=forms.Textarea, required=False)
 
     class Meta:
         model = Post

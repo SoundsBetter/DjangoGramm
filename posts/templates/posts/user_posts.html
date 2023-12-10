@@ -4,7 +4,11 @@
     {% for post in user.posts.all %}
         <div class="center">
             <div class="post">
-                <p>{{ post.caption }}</p>
+                {% if post.user == request.user %}
+                    <a href="{% url 'posts:post_detail' post.id %}">
+                        <p>{{ post.caption }} <-- click for details</p></a>
+                {% else %} <p>{{ post.caption }}</p>
+                {% endif %}
                 <div class="image-container">
                     {% for photo in post.photos.all %}
                         <img src="{{ photo.picture.url }}" alt="Photo">

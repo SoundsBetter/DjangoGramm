@@ -21,7 +21,11 @@
                         <img src="{{ photo.picture.url }}" alt="Photo">
                     {% endfor %}
                 </div>
-                <p>{{ post.caption }}</p>
+                {% if post.user == request.user %}
+                    <a href="{% url 'posts:post_detail' post.id %}">
+                        <p>{{ post.caption }} <-- click for details</p></a>
+                {% else %} <p>{{ post.caption }}</p>
+                {% endif %}
                 {% for hashtag in post.hashtags.all %}
                     <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
                             class="hashtag">#{{ hashtag.name }}</span></a>

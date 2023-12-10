@@ -1,0 +1,37 @@
+{% extends "base_profile.html" %}
+{% load static %}
+{% block main %}
+    <p class="center">{{ post.caption }}</p>
+    {% for photo in post.photos.all %}
+        <div class="center">
+            <p><img class="post image-container" src="{{ photo.picture.url }}"
+                    alt="photo"></p>
+        </div>
+    {% endfor %}
+
+    <p class="center">{{ post.content }}</p>
+    <h2 class="center">Likes from:</h2>
+    {% for like in post.likes.all %}
+        <p class="list_of_users"><a
+                href="{% url 'posts:get_user_posts' like.id %}">
+            {% if like.userprofile.avatar %}
+                <img class="small_avatar"
+                     src="{{ user.userprofile.avatar.url }}" alt="avatar">
+            {% else %}
+                <img class="small_avatar"
+                     src="{% static 'images/no_avatar.jpg' %}"
+                     alt="Default Avatar">
+            {% endif %}
+            {{ like.username }}
+        </a></p>
+    {% endfor %}
+
+
+
+    </button>
+    {% if post.user == request.user %}
+        <button class="button">
+            <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
+        </button>
+    {% endif %}
+{% endblock %}

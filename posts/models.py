@@ -12,7 +12,7 @@ class Post(models.Model):
         User, on_delete=models.CASCADE, related_name="posts"
     )
     caption = models.CharField(max_length=250)
-    content = models.TextField(blank=True)
+    content = models.TextField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(

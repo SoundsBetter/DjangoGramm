@@ -85,6 +85,11 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
     )
 
 
+def post_detail(request: HttpRequest, post_id: int) -> HttpResponseBase:
+    post = Post.objects.get(pk=post_id)
+    return render(request, "posts/post.html", {"post": post})
+
+
 @login_required
 def get_user_posts(request: HttpRequest, user_id: int) -> HttpResponseBase:
     user = (
