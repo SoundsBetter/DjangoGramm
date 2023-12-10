@@ -1,7 +1,10 @@
+from functools import partial
+
 from django.db import models
 from django.contrib.auth.models import User
 
-from DjangoGramm.utils import user_directory_path
+from DjangoGramm.settings import PICTURES
+from DjangoGramm.utils import directory_path
 
 
 class Post(models.Model):
@@ -9,8 +12,12 @@ class Post(models.Model):
         User, on_delete=models.CASCADE, related_name="posts"
     )
     caption = models.CharField(max_length=250)
+    content = models.TextField(blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(User, related_name="likes", blank=True)
+    likes = models.ManyToManyField(
+        User, through="Like", related_name="liked_posts"
+    )
 
     hashtags = models.ManyToManyField("Hashtag", blank=True)
 
@@ -19,7 +26,9 @@ class Photo(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name="photos"
     )
-    picture = models.ImageField(upload_to=user_directory_path)
+    picture = models.ImageField(
+        upload_to=partial(directory_path, base_folder=PICTURES)
+    )
 
 
 class Hashtag(models.Model):
@@ -28,7 +37,7 @@ class Hashtag(models.Model):
 
 class Like(models.Model):
     post = models.ForeignKey("Post", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

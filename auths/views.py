@@ -9,7 +9,7 @@ from django.utils.encoding import force_str
 
 from account.models import UserProfile
 from auths.forms import EmailOnlyRegistrationForm, LoginForm
-from auths.settings import (
+from DjangoGramm.text_messages import (
     USER_EXISTS_MSG,
     REG_SUCCESS_MSG,
     ACTIVATE_SUCCESS_MSG,

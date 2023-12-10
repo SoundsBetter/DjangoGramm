@@ -6,8 +6,8 @@ from django.core.mail import send_mail
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from DjangoGramm.settings import EMAIL_HOST_USER
-from auths.settings import EMAIL_MSG, EMAIL_SUBJECT, ACTIVATE_URL
+from DjangoGramm.settings import EMAIL_HOST_USER, ACTIVATE_URL
+from DjangoGramm.text_messages import EMAIL_MSG, EMAIL_SUBJECT
 
 UserType = t.TypeVar("UserType", bound=User)
 

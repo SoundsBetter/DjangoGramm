@@ -8,7 +8,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from posts.models import Post, Hashtag, Photo
-from posts.settings import LIKE_IT_MSG, UNLIKE_DENIED_MSG
+from DjangoGramm.text_messages import UNLIKE_DENIED_MSG, LIKE_IT_MSG
 
 
 # Create your tests here.

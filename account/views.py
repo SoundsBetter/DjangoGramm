@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 
 from account.forms import UserProfileForm
 from account.models import UserProfile
-from account.settings import NOT_HAVE_ACCESS, PROFILE_UPD_SUCCESS
+from DjangoGramm.text_messages import NOT_HAVE_ACCESS, PROFILE_UPD_SUCCESS
 from auths.forms import UserForm
 
 

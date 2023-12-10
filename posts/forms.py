@@ -4,9 +4,11 @@ from posts.models import Post, Photo
 
 
 class PostForm(forms.ModelForm):
+    content = forms.CharField(widget=forms.Textarea)
+
     class Meta:
         model = Post
-        fields = ("caption",)
+        fields = ("caption", "content")
 
 
 class PhotoFormEdit(forms.ModelForm):

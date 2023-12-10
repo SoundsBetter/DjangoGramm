@@ -9,7 +9,7 @@ from django.http import HttpRequest, HttpResponseBase, HttpResponse
 
 from posts.forms import PostForm, PhotoForm, PhotoFormEdit
 from posts.models import Post, Photo
-from posts.settings import (
+from DjangoGramm.text_messages import (
     POST_CREATED_MSG,
     POST_EDIT_DENIED_MSG,
     POST_EDIT_SUCCESS_MSG,
@@ -59,6 +59,7 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
         photo_form = PhotoFormEdit(request.POST, request.FILES)
         if post_form.is_valid():
             post.caption = post_form.cleaned_data["caption"]
+            post.content = post_form.cleaned_data["content"]
             post.save()
             if "picture" in request.FILES:
                 photo = photo_form.save(commit=False)

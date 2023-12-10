@@ -6,11 +6,11 @@ from django.contrib.messages import get_messages
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from auths.settings import (
-    ACTIVATE_ERROR_MSG,
-    ACTIVATE_SUCCESS_MSG,
+from DjangoGramm.text_messages import (
     USER_EXISTS_MSG,
     REG_SUCCESS_MSG,
+    ACTIVATE_SUCCESS_MSG,
+    ACTIVATE_ERROR_MSG,
 )
 
 

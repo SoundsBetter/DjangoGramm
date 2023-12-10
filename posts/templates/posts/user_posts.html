@@ -4,15 +4,16 @@
     {% for post in user.posts.all %}
         <div class="center">
             <div class="post">
+                <p>{{ post.caption }}</p>
                 <div class="image-container">
                     {% for photo in post.photos.all %}
                         <img src="{{ photo.picture.url }}" alt="Photo">
                     {% endfor %}
                 </div>
-                <a href="{% url 'posts:edit_post' post.id %}">
-                    <p>{{ post.caption }}</p></a>
+                <p>{{ post.content }}</p>
                 {% for hashtag in post.hashtags.all %}
-                    <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span class="hashtag">#{{ hashtag.name }}</span></a>
+                    <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
+                            class="hashtag">#{{ hashtag.name }}</span></a>
                 {% endfor %}
                 <p>{{ post.likes_count }} likes</p>
                 <button class="button"><a
