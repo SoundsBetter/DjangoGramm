@@ -81,7 +81,7 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
                 photo.save()
             hashtags = hashtag_form.cleaned_data.get("hashtags")
             if hashtags:
-                hashtag_handler(post=post, hashtags=hashtags.split())
+                hashtag_handler(post=post, hashtags=hashtags.split())  # type: ignore
             messages.success(request, POST_EDIT_SUCCESS_MSG)
             return redirect("posts:get_user_posts", user_id=request.user.id)
     else:

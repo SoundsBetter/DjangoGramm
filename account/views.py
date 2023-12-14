@@ -1,13 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    AccessMixin,
+)
 from django.contrib.auth.models import User
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.http import HttpResponseBase, HttpRequest
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import UpdateView, ListView
+from django.views.generic import UpdateView, ListView, DeleteView
 
 from account.forms import UserProfileForm
 from account.models import UserProfile
@@ -19,20 +24,19 @@ from DjangoGramm.text_messages import (
 from auths.forms import UserForm
 
 
-class ProfileView(LoginRequiredMixin, View):
+class ProfileView(AccessMixin, View):
     template_name = "account/profile.html"
 
     def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-
-        if response.status_code in [302, 301]:
-            return response
+        if not request.user.is_authenticated:
+            return redirect("auths:login")
 
         user_id = kwargs.get("user_id")
-        if request.user.id != int(user_id):
+        if request.user.id != user_id:
             messages.error(request, NOT_HAVE_ACCESS)
-            return redirect("home")
-        return response
+            return redirect(request.META.get("HTTP_REFERER", "home"))
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, user_id):
         user_form = UserForm(instance=request.user)
@@ -86,10 +90,20 @@ class AllUsersView(LoginRequiredMixin, ListView):
         return context
 
 
-@login_required
-def delete_user(request: HttpRequest, user_id: int) -> HttpResponseBase:
-    User.objects.get(pk=user_id).delete()
-    return redirect("home")
+class DeleteUserView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = User
+    success_url = reverse_lazy("home")
+
+    def test_func(self):
+        return self.request.user.id == self.kwargs["pk"]
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Користувача успішно видалено.")
+        return super().delete(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        # Виконуємо видалення без підтвердження через шаблон
+        return self.delete(request, *args, **kwargs)
 
 
 @receiver(post_delete, sender=UserProfile)

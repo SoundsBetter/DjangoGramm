@@ -32,7 +32,7 @@ class AccountsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
-            f'/auths/login/?next={reverse("account:profile", kwargs={"user_id": self.user.id})}',
+            f"/auths/login/",
         )
 
     def test_profile_another_user(self):
