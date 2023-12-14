@@ -1,4 +1,5 @@
 import typing as t
+from itertools import chain
 
 from django.db.models import Model
 
@@ -8,8 +9,13 @@ M = t.TypeVar("M", bound=t.Type[Model])
 
 
 def hashtag_handler(post: M, hashtags: list[str]) -> None:
-    existing_hashtags = [hashtag.name for hashtag in Hashtag.objects.all()]
-    for hashtag_text in hashtags:
-        if hashtag_text not in existing_hashtags:
-            hashtag = Hashtag.objects.create(name=hashtag_text)
-            post.hashtags.add(hashtag)
+    existing_hashtags = Hashtag.objects.filter(name__in=hashtags)
+    existing_hashtag_names = (hashtag.name for hashtag in existing_hashtags)
+    new_hashtags = [
+        Hashtag(name=name)
+        for name in hashtags
+        if name not in existing_hashtag_names
+    ]
+    Hashtag.objects.bulk_create(new_hashtags)
+    for hashtag in chain(existing_hashtags, new_hashtags):
+        post.hashtags.add(hashtag)

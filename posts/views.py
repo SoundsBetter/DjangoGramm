@@ -2,12 +2,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Prefetch, Count
-from django.db.models.signals import post_delete, pre_delete
+from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponseBase, HttpResponse
 
-from posts.forms import PostForm, PhotoForm, PhotoFormEdit
+from posts.forms import PostForm, PhotoForm, PhotoFormEdit, HashtagForm
 from posts.models import Post, Photo, Like
 from DjangoGramm.text_messages import (
     POST_CREATED_MSG,
@@ -15,6 +15,8 @@ from DjangoGramm.text_messages import (
     POST_EDIT_SUCCESS_MSG,
     UNLIKE_DENIED_MSG,
     LIKE_IT_MSG,
+    CREATE_POST_SUBMIT,
+    UPDATE_POST_SUBMIT,
 )
 from posts.utils import hashtag_handler
 
@@ -24,26 +26,37 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
     if request.method == "POST":
         post_form = PostForm(request.POST)
         photo_form = PhotoForm(request.POST, request.FILES)
-        if post_form.is_valid() and photo_form.is_valid():
+        hashtag_form = HashtagForm(request.POST)
+        if (
+            post_form.is_valid()
+            and photo_form.is_valid()
+            and hashtag_form.is_valid()
+        ):
             post = post_form.save(commit=False)
             post.user = request.user
             post.save()
             photo = photo_form.save(commit=False)
             photo.post = post
             photo.save()
-
-            if hashtags := request.POST.get("hashtags").split():  # type: ignore
-                hashtag_handler(post=post, hashtags=hashtags)
+            hashtags = hashtag_form.cleaned_data.get("hashtags")
+            if hashtags:
+                hashtag_handler(post=post, hashtags=hashtags.split())
             messages.success(request, POST_CREATED_MSG)
             return redirect("posts:get_user_posts", user_id=user_id)
     else:
         post_form = PostForm()
         photo_form = PhotoForm()
-
+        hashtag_form = HashtagForm()
     return render(
         request,
         "posts/create_post.html",
-        {"post_form": post_form, "photo_form": photo_form, "user_id": user_id},
+        {
+            "post_form": post_form,
+            "photo_form": photo_form,
+            "hashtag_form": hashtag_form,
+            "user_id": user_id,
+            "submit_button": CREATE_POST_SUBMIT,
+        },
     )
 
 
@@ -57,7 +70,8 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
     if request.method == "POST":
         post_form = PostForm(request.POST)
         photo_form = PhotoFormEdit(request.POST, request.FILES)
-        if post_form.is_valid():
+        hashtag_form = HashtagForm(request.POST)
+        if post_form.is_valid() and hashtag_form.is_valid():
             post.caption = post_form.cleaned_data["caption"]
             post.content = post_form.cleaned_data["content"]
             post.save()
@@ -65,28 +79,36 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
                 photo = photo_form.save(commit=False)
                 photo.post = post
                 photo.save()
-
-            if hashtags := request.POST.get("hashtags").split():  # type: ignore
-                hashtag_handler(post=post, hashtags=hashtags)
+            hashtags = hashtag_form.cleaned_data.get("hashtags")
+            if hashtags:
+                hashtag_handler(post=post, hashtags=hashtags.split())
             messages.success(request, POST_EDIT_SUCCESS_MSG)
             return redirect("posts:get_user_posts", user_id=request.user.id)
     else:
         post_form = PostForm(instance=post)
         photo_form = PhotoFormEdit()
+        hashtag_form = HashtagForm()
     return render(
         request,
         "posts/edit_post.html",
         {
             "post_form": post_form,
             "photo_form": photo_form,
+            "hashtag_form": hashtag_form,
             "user_id": request.user.id,
             "post": post,
+            "submit_button": UPDATE_POST_SUBMIT,
         },
     )
 
 
+@login_required
 def post_detail(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    post = Post.objects.get(pk=post_id)
+    post = (
+        Post.objects.select_related("user__userprofile")
+        .prefetch_related("photos", "hashtags", "likes")
+        .get(pk=post_id)
+    )
     return render(request, "posts/post.html", {"post": post})
 
 

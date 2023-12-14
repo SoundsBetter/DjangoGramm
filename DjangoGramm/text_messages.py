@@ -4,6 +4,7 @@ PHONE_FMT = (
 )
 NOT_HAVE_ACCESS = "You do not have access to this page."
 PROFILE_UPD_SUCCESS = "Profile was updated successfully."
+PROFILE_UPD_ERROR = "Please correct the errors below."
 EMAIL_MSG = (
     "Thank you for registering! Please click the link below to "
     "confirm your email:\n\n%(link)s\n\n Your password: %(password)s"
@@ -18,3 +19,5 @@ POST_EDIT_DENIED_MSG = "You can only edit your own posts"
 POST_EDIT_SUCCESS_MSG = "Post updated successfully"
 UNLIKE_DENIED_MSG = "You do not liked it anymore."
 LIKE_IT_MSG = "You liked it."
+CREATE_POST_SUBMIT = "Create post"
+UPDATE_POST_SUBMIT = "Update post"

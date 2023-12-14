@@ -22,7 +22,11 @@
                      src="{% static 'images/no_avatar.jpg' %}"
                      alt="Default Avatar">
             {% endif %}
-            {{ like.username }}
+            {{ like.user.username }}
+            {% for hashtag in post.hashtags.all %}
+                <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
+                        class="hashtag">#{{ hashtag.name }}</span></a>
+            {% endfor %}
         </a></p>
     {% endfor %}
 

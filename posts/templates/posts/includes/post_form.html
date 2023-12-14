@@ -1,0 +1,7 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ post_form.as_p }}
+    {{ photo_form.as_p }}
+    {{ hashtag_form.as_p }}
+    <button type="submit">{{ submit_button }}</button>
+</form>

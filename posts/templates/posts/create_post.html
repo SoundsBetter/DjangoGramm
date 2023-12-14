@@ -1,14 +1,5 @@
 {% extends "base_profile.html" %}
 {% load static %}
 {% block main %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ post_form.as_p }}
-        {{ photo_form.as_p }}
-        <div>
-            <label for="hashtags">Hashtags:</label>
-            <input type="text" name="hashtags" id="hashtags" />
-        </div>
-        <button type="submit">Create post</button>
-    </form>
+    {% include "posts/includes/post_form.html" %}
 {% endblock %}

@@ -11,6 +11,12 @@ class PostForm(forms.ModelForm):
         fields = ("caption", "content")
 
 
+class PhotoForm(forms.ModelForm):
+    class Meta:
+        model = Photo
+        fields = ("picture",)
+
+
 class PhotoFormEdit(forms.ModelForm):
     picture = forms.ImageField(required=False)
 
@@ -19,11 +25,5 @@ class PhotoFormEdit(forms.ModelForm):
         fields = ("picture",)
 
 
-class PhotoForm(forms.ModelForm):
-    class Meta:
-        model = Photo
-        fields = ("picture",)
-
-
 class HashtagForm(forms.Form):
-    hashtags = forms.CharField(max_length=50)
+    hashtags = forms.CharField(max_length=50, required=False)

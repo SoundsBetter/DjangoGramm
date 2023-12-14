@@ -1,46 +1,71 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.http import HttpResponseBase, HttpRequest
 from django.shortcuts import render, redirect
+from django.views import View
+from django.views.generic import UpdateView
 
 from account.forms import UserProfileForm
 from account.models import UserProfile
-from DjangoGramm.text_messages import NOT_HAVE_ACCESS, PROFILE_UPD_SUCCESS
+from DjangoGramm.text_messages import (
+    NOT_HAVE_ACCESS,
+    PROFILE_UPD_SUCCESS,
+    PROFILE_UPD_ERROR,
+)
 from auths.forms import UserForm
 
 
-@login_required
-def profile(request: HttpRequest, user_id: int) -> HttpResponseBase:
-    if request.user.id != user_id:
-        messages.error(request, NOT_HAVE_ACCESS)
-        return redirect(request.META.get("HTTP_REFERER", "home"))
+class ProfileView(LoginRequiredMixin, View):
+    template_name = "account/profile.html"
 
-    if request.method == "POST":
+    def get(self, request, user_id):
+        if request.user.id != int(user_id):
+            messages.error(request, "У вас немає доступу до цієї сторінки.")
+            return redirect("home")
+
+        user_form = UserForm(instance=request.user)
+        profile_form = UserProfileForm(instance=request.user.userprofile)
+        return render(
+            request,
+            self.template_name,
+            {
+                "user_form": user_form,
+                "profile_form": profile_form,
+                "user_id": user_id,
+            },
+        )
+
+    def post(self, request, user_id):
+        if request.user.id != int(user_id):
+            messages.error(request, "У вас немає доступу до цієї сторінки.")
+            return redirect("home")
+
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = UserProfileForm(
             request.POST, request.FILES, instance=request.user.userprofile
         )
+
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, PROFILE_UPD_SUCCESS)
+            messages.success(request, "Профіль успішно оновлено.")
             return redirect("account:profile", user_id=user_id)
-    else:
-        user_form = UserForm(instance=request.user)
-        profile_form = UserProfileForm(instance=request.user.userprofile)
+        else:
+            messages.error(request, PROFILE_UPD_ERROR)
 
-    return render(
-        request,
-        "account/profile.html",
-        {
-            "user_form": user_form,
-            "profile_form": profile_form,
-            "user_id": user_id,
-        },
-    )
+        return render(
+            request,
+            self.template_name,
+            {
+                "user_form": user_form,
+                "profile_form": profile_form,
+                "user_id": user_id,
+            },
+        )
 
 
 @login_required
