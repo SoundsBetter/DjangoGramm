@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from django.http import HttpResponseBase, HttpRequest
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, ListView
 
 from account.forms import UserProfileForm
 from account.models import UserProfile
@@ -22,11 +22,19 @@ from auths.forms import UserForm
 class ProfileView(LoginRequiredMixin, View):
     template_name = "account/profile.html"
 
-    def get(self, request, user_id):
-        if request.user.id != int(user_id):
-            messages.error(request, "У вас немає доступу до цієї сторінки.")
-            return redirect("home")
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
 
+        if response.status_code in [302, 301]:
+            return response
+
+        user_id = kwargs.get("user_id")
+        if request.user.id != int(user_id):
+            messages.error(request, NOT_HAVE_ACCESS)
+            return redirect("home")
+        return response
+
+    def get(self, request, user_id):
         user_form = UserForm(instance=request.user)
         profile_form = UserProfileForm(instance=request.user.userprofile)
         return render(
@@ -40,10 +48,6 @@ class ProfileView(LoginRequiredMixin, View):
         )
 
     def post(self, request, user_id):
-        if request.user.id != int(user_id):
-            messages.error(request, "У вас немає доступу до цієї сторінки.")
-            return redirect("home")
-
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = UserProfileForm(
             request.POST, request.FILES, instance=request.user.userprofile
@@ -52,7 +56,7 @@ class ProfileView(LoginRequiredMixin, View):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, "Профіль успішно оновлено.")
+            messages.success(request, PROFILE_UPD_SUCCESS)
             return redirect("account:profile", user_id=user_id)
         else:
             messages.error(request, PROFILE_UPD_ERROR)
@@ -68,14 +72,18 @@ class ProfileView(LoginRequiredMixin, View):
         )
 
 
-@login_required
-def get_all_users(request: HttpRequest) -> HttpResponseBase:
-    users = User.objects.all()
-    return render(
-        request,
-        "account/all_users.html",
-        {"users": users, "user_id": request.user.id},
-    )
+class AllUsersView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "account/all_users.html"
+    context_object_name = "users"
+
+    def get_queryset(self):
+        return User.objects.all().order_by("username")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user_id"] = self.request.user.id
+        return context
 
 
 @login_required
