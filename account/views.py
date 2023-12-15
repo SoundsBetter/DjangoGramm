@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     UserPassesTestMixin,
@@ -8,11 +7,10 @@ from django.contrib.auth.mixins import (
 from django.contrib.auth.models import User
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-from django.http import HttpResponseBase, HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import UpdateView, ListView, DeleteView
+from django.views.generic import ListView, DeleteView
 
 from account.forms import UserProfileForm
 from account.models import UserProfile
@@ -102,7 +100,6 @@ class DeleteUserView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        # Виконуємо видалення без підтвердження через шаблон
         return self.delete(request, *args, **kwargs)
 
 
