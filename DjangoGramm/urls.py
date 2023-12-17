@@ -27,7 +27,7 @@ from DjangoGramm.settings import (
 
 urlpatterns = [
     path("posts/", include("posts.urls")),
-    path("account/", include("account.urls")),
+    path("accounts/", include("accounts.urls")),
     path("auths/", include("auths.urls")),
     path("", views.home, name="home"),
     path("admin/", admin.site.urls),

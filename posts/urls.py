@@ -30,12 +30,12 @@ urlpatterns = [
         name="delete_photo",
     ),
     path(
-        "account/<int:user_id>/",
+        "accounts/<int:user_id>/",
         views.get_user_posts,
         name="get_user_posts",
     ),
     path(
-        "account/<int:user_id>/create/",
+        "accounts/<int:user_id>/create/",
         views.create_post,
         name="create_post",
     ),

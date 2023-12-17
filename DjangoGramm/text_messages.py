@@ -9,11 +9,12 @@ EMAIL_MSG = (
     "Thank you for registering! Please click the link below to "
     "confirm your email:\n\n%(link)s\n\n Your password: %(password)s"
 )
-EMAIL_SUBJECT = "Activate your account"
+EMAIL_SUBJECT = "Activate your accounts"
 USER_EXISTS_MSG = "User with e-mail %s already exists"
 REG_SUCCESS_MSG = "Please check your email and click the activation link"
 ACTIVATE_SUCCESS_MSG = "Account activated successfully"
 ACTIVATE_ERROR_MSG = "Activation failure"
+USER_DELETE_SUCCESS_MSG = "User was successfully deleted"
 POST_CREATED_MSG = "Post was created successfully"
 POST_EDIT_DENIED_MSG = "You can only edit your own posts"
 POST_EDIT_SUCCESS_MSG = "Post updated successfully"

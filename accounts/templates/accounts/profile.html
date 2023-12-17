@@ -7,5 +7,11 @@
         {{ profile_form.as_p }}
         <button type="submit">Update Profile</button>
     </form>
-    <a href="{% url 'account:delete_user' user.id %}"><button type="submit">DELETE USER</button></a>
+
+    <form class="ignore" method="post" action="{% url 'accounts:profile' user_id=request.user.id %}"
+          style="display: inline">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete"/>
+        <button type="submit">DELETE USER</button>
+    </form>
 {% endblock %}

@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 
-from account.models import UserProfile
+from accounts.models import UserProfile
 from auths.forms import EmailOnlyRegistrationForm, LoginForm
 from DjangoGramm.text_messages import (
     USER_EXISTS_MSG,
@@ -58,7 +58,7 @@ def activate(request: HttpRequest, uidb64: str, token: str) -> HttpResponseBase:
             login(request, user)
 
             messages.success(request, ACTIVATE_SUCCESS_MSG)
-            return redirect("account:profile", user_id=user.id)
+            return redirect("accounts:profile", user_id=user.id)
         else:
             messages.error(request, ACTIVATE_ERROR_MSG)
             return redirect("home")
@@ -77,7 +77,7 @@ def login_view(request: HttpRequest) -> HttpResponseBase:
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("account:profile", user.id)
+                return redirect("accounts:profile", user.id)
     else:
         form = LoginForm()
     return render(request, "auths/login.html", {"form": form})

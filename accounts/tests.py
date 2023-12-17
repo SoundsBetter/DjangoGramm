@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from account.models import UserProfile
+from accounts.models import UserProfile
 
 
 # Create your tests here.
@@ -17,16 +17,16 @@ class AccountsViewTests(TestCase):
     def test_profile_authenticated_user(self):
         self.client.login(username="test_user", password="test_password")
         response = self.client.get(
-            reverse("account:profile", kwargs={"user_id": self.user.id})
+            reverse("accounts:profile", kwargs={"user_id": self.user.id})
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "account/profile.html")
+        self.assertTemplateUsed(response, "accounts/profile.html")
         self.assertContains(response, "Update Profile")
 
     def test_profile_unauthenticated_user(self):
         response = self.client.get(
-            reverse("account:profile", kwargs={"user_id": self.user.id})
+            reverse("accounts:profile", kwargs={"user_id": self.user.id})
         )
 
         self.assertEqual(response.status_code, 302)
@@ -41,7 +41,7 @@ class AccountsViewTests(TestCase):
         )
         self.client.login(username="test_user", password="test_password")
         response = self.client.get(
-            reverse("account:profile", kwargs={"user_id": another_user.id})
+            reverse("accounts:profile", kwargs={"user_id": another_user.id})
         )
         self.assertEqual(response.status_code, 302)
 
@@ -59,7 +59,7 @@ class AccountsViewTests(TestCase):
         }
 
         response = self.client.post(
-            reverse("account:profile", kwargs={"user_id": self.user.id}),
+            reverse("accounts:profile", kwargs={"user_id": self.user.id}),
             data,
             format="multipart",
         )
@@ -84,7 +84,7 @@ class AccountsViewTests(TestCase):
         }
 
         response = self.client.post(
-            reverse("account:profile", kwargs={"user_id": self.user.id}),
+            reverse("accounts:profile", kwargs={"user_id": self.user.id}),
             data,
             format="multipart",
         )
@@ -97,7 +97,7 @@ class AccountsViewTests(TestCase):
     def test_get_all_users(self):
         self.client.login(username="test_user", password="test_password")
         response = self.client.get(
-            reverse("account:get_all_users"), kwargs={"user_id": self.user.id}
+            reverse("accounts:get_all_users"), kwargs={"user_id": self.user.id}
         )
 
         self.assertEqual(response.status_code, 200)

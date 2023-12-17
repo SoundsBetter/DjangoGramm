@@ -1,7 +1,7 @@
 from django import forms
 
-from account.models import UserProfile
-from account.validators import PHONE_REGEX
+from accounts.models import UserProfile
+from accounts.validators import PHONE_REGEX
 
 
 class UserProfileForm(forms.ModelForm):

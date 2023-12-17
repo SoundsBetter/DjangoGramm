@@ -3,7 +3,7 @@
 {% block content %}
     <div class="user-profile">
         <div class="avatar">
-            <a href="{% url 'account:profile' user.id %}">
+            <a href="{% url 'accounts:profile' user.id %}">
                 {% if user.userprofile.avatar %}
                     <img src="{{ user.userprofile.avatar.url }}"
                          alt="User Avatar">
