@@ -69,8 +69,12 @@ def activate(request: HttpRequest, uidb64: str, token: str) -> HttpResponseBase:
         return redirect("home")
 
 
-def login_view(request: HttpRequest) -> HttpResponseBase:
-    if request.method == "POST":
+class LoginView(View):
+    def get(self, request: HttpRequest) -> HttpResponseBase:
+        form = LoginForm()
+        return render(request, "auths/login.html", {"form": form})
+
+    def post(self, request: HttpRequest) -> HttpResponseBase:
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data["username"]
@@ -79,12 +83,9 @@ def login_view(request: HttpRequest) -> HttpResponseBase:
             if user is not None:
                 login(request, user)
                 return redirect("accounts:profile", user.id)
-    else:
-        form = LoginForm()
-    return render(request, "auths/login.html", {"form": form})
 
 
 class LogoutView(View):
-    def get(self, request):
+    def get(self, request: HttpRequest) -> HttpResponseBase:
         logout(request)
         return redirect("home")
