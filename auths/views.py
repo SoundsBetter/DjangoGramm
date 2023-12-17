@@ -6,6 +6,7 @@ from django.http import HttpRequest, HttpResponseBase
 from django.shortcuts import render, redirect
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
+from django.views import View
 
 from accounts.models import UserProfile
 from auths.forms import EmailOnlyRegistrationForm, LoginForm
@@ -83,6 +84,7 @@ def login_view(request: HttpRequest) -> HttpResponseBase:
     return render(request, "auths/login.html", {"form": form})
 
 
-def logout_view(request: HttpRequest) -> HttpResponseBase:
-    logout(request)
-    return redirect("home")
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("home")
