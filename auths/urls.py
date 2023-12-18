@@ -4,8 +4,12 @@ from . import views
 
 app_name = "auths"
 urlpatterns = [
-    path("activate/<uidb64>/<token>/", views.activate, name="activate"),
+    path(
+        "activate/<uidb64>/<token>/",
+        views.ActivateView.as_view(),
+        name="activate",
+    ),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
-    path("register/", views.register, name="register"),
+    path("register/", views.RegisterView.as_view(), name="register"),
 ]

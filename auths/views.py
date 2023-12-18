@@ -19,8 +19,12 @@ from DjangoGramm.text_messages import (
 from auths.utils import send_confirmation_email
 
 
-def register(request: HttpRequest) -> HttpResponseBase:
-    if request.method == "POST":
+class RegisterView(View):
+    def get(self, request: HttpRequest) -> HttpResponseBase:
+        form = EmailOnlyRegistrationForm()
+        return render(request, "auths/register.html", {"form": form})
+
+    def post(self, request: HttpRequest) -> HttpResponseBase:
         form = EmailOnlyRegistrationForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data["email"]
@@ -40,33 +44,33 @@ def register(request: HttpRequest) -> HttpResponseBase:
                 return redirect("home")
             messages.error(request, USER_EXISTS_MSG % email)
             return redirect("home")
-    else:
-        form = EmailOnlyRegistrationForm()
-    return render(request, "auths/register.html", {"form": form})
 
 
-def activate(request: HttpRequest, uidb64: str, token: str) -> HttpResponseBase:
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
+class ActivateView(View):
+    def get(
+        self, request: HttpRequest, uidb64: str, token: str
+    ) -> HttpResponseBase:
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
 
-        if default_token_generator.check_token(user, token):
-            user.is_active = True
-            user_profile = UserProfile(user_id=user.id)
-            user.save()
-            user_profile.save()
+            if default_token_generator.check_token(user, token):
+                user.is_active = True
+                user_profile = UserProfile(user_id=user.id)
+                user.save()
+                user_profile.save()
 
-            login(request, user)
+                login(request, user)
 
-            messages.success(request, ACTIVATE_SUCCESS_MSG)
-            return redirect("accounts:profile", user_id=user.id)
-        else:
+                messages.success(request, ACTIVATE_SUCCESS_MSG)
+                return redirect("accounts:profile", user_id=user.id)
+            else:
+                messages.error(request, ACTIVATE_ERROR_MSG)
+                return redirect("home")
+
+        except User.DoesNotExist:
             messages.error(request, ACTIVATE_ERROR_MSG)
             return redirect("home")
-
-    except User.DoesNotExist:
-        messages.error(request, ACTIVATE_ERROR_MSG)
-        return redirect("home")
 
 
 class LoginView(View):
