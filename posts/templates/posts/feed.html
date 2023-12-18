@@ -6,11 +6,13 @@
             <div class="post">
                 <a href="{% url 'posts:get_user_posts' post.user.id %}"><p>
                     {% if post.user.userprofile.avatar %}
-                        <img class="small_avatar"
+                        <img class="rounded-circle"
+                             style="width: 100px; height: 100px;"
                              src="{{ post.user.userprofile.avatar.url }}"
                              alt="avatar">
                     {% else %}
-                        <img class="small_avatar"
+                        <img class="rounded-circle"
+                             style="width: 100px; height: 100px;"
                              src="{% static 'images/no_avatar.jpg' %}"
                              alt="Default Avatar">
                     {% endif %}

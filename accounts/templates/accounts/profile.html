@@ -1,16 +1,51 @@
 {% extends "base_profile.html" %}
+{% load crispy_forms_filters %}
 {% load static %}
 {% block main %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ user_form.as_p }}
-        {{ profile_form.as_p }}
-        <button type="submit">Update Profile</button>
-    </form>
+    <div class="container my-4">
+        <!-- Update Profile Form -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Update Profile</h2>
+                <form method="post" enctype="multipart/form-data" class="row g-3">
+                    {% csrf_token %}
+                    <div class="col-md-6">
+                        {{ user_form.username|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ profile_form.avatar|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ user_form.first_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ user_form.last_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ user_form.email|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ profile_form.phone_number|as_crispy_field }}
+                    </div>
+                    <div class="col-12">
+                        {{ profile_form.date_of_birth|as_crispy_field }}
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-    <form class="ignore" method="post" action="{% url 'accounts:profile' user_id=request.user.id %}">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="delete"/>
-        <button type="submit">DELETE USER</button>
-    </form>
+        <!-- Delete Profile Form -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <form method="post" action="{% url 'accounts:profile' user_id=request.user.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete"/>
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">Delete User</button>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

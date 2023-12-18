@@ -1,24 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    <div class="user-profile">
-        <div class="avatar">
-            <a href="{% url 'accounts:profile' user.id %}">
-                {% if user.userprofile.avatar %}
-                    <img src="{{ user.userprofile.avatar.url }}"
-                         alt="User Avatar">
-                {% else %}
-                    <img src="{% static 'images/no_avatar.jpg' %}"
-                         alt="Default Avatar">
-                {% endif %}</a>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                {% include 'includes/avatar_info.html' %}
+            </div>
+            <div class="col-md-9">
+                <!-- Ваша форма або інший контент тут -->
+                {% block main %}
+                {% endblock %}
+            </div>
         </div>
-        <h3>{{ user }}</h3>
     </div>
-    {% block main %}
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Create post</button>
-        </form>
-    {% endblock %}
 {% endblock %}
