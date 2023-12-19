@@ -16,13 +16,8 @@ urlpatterns = [
     ),
     path(
         "<int:post_id>/",
-        views.post_detail,
+        views.PostView.as_view(),
         name="post_detail",
-    ),
-    path(
-        "<int:post_id>/delete/",
-        views.delete_post,
-        name="delete_post",
     ),
     path(
         "photos/<int:photo_id>/delete/",

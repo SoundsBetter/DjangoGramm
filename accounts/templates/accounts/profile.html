@@ -8,8 +8,7 @@
         <button type="submit">Update Profile</button>
     </form>
 
-    <form class="ignore" method="post" action="{% url 'accounts:profile' user_id=request.user.id %}"
-          style="display: inline">
+    <form class="ignore" method="post" action="{% url 'accounts:profile' user_id=request.user.id %}">
         {% csrf_token %}
         <input type="hidden" name="action" value="delete"/>
         <button type="submit">DELETE USER</button>

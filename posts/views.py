@@ -19,6 +19,7 @@ from DjangoGramm.text_messages import (
     LIKE_IT_MSG,
     CREATE_POST_SUBMIT,
     UPDATE_POST_SUBMIT,
+    POST_DELETE_SUCCESS_MSG,
 )
 from posts.utils import hashtag_handler
 
@@ -63,8 +64,24 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
 
 
 class PostView(LoginRequiredMixin, View):
+    def get(self, request: HttpRequest, post_id: int) -> HttpResponseBase:
+        post = (
+            Post.objects.select_related("user__userprofile")
+            .prefetch_related("photos", "hashtags", "likes")
+            .get(pk=post_id)
+        )
+        return render(request, "posts/post.html", {"post": post})
 
-    def get(self, request: HttpRequest, post_id: int):
+    def post(self, request: HttpRequest, post_id: int) -> HttpResponseBase:
+        if request.POST.get("action") == "delete":
+            return self.delete(request, post_id)
+
+    def delete(self, request: HttpRequest, post_id: int) -> HttpResponseBase:
+        post = get_object_or_404(Post, pk=post_id)
+        print(post)
+        post.delete()
+        messages.success(request, POST_DELETE_SUCCESS_MSG)
+        return redirect("posts:get_user_posts", user_id=request.user.id)
 
 
 @login_required
@@ -107,16 +124,6 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
             "submit_button": UPDATE_POST_SUBMIT,
         },
     )
-
-
-@login_required
-def post_detail(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    post = (
-        Post.objects.select_related("user__userprofile")
-        .prefetch_related("photos", "hashtags", "likes")
-        .get(pk=post_id)
-    )
-    return render(request, "posts/post.html", {"post": post})
 
 
 @login_required
@@ -166,12 +173,6 @@ def like_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
         Like.objects.create(post_id=post_id, user_id=request.user.id)
         messages.success(request, LIKE_IT_MSG)
     return redirect(request.META.get("HTTP_REFERER", "home"))
-
-
-@login_required
-def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    Post.objects.get(pk=post_id).delete()
-    return redirect("posts:get_user_posts", user_id=request.user.id)
 
 
 @login_required
