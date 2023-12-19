@@ -59,7 +59,6 @@ class AuthsViewsTests(TestCase):
         response = self.client.post(
             reverse("auths:register"), {"email": "invalid_email"}
         )
-
         self.assertEqual(200, response.status_code)
         self.assertContains(response, "Enter a valid email address.")
 

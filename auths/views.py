@@ -44,6 +44,8 @@ class RegisterView(View):
                 return redirect("home")
             messages.error(request, USER_EXISTS_MSG % email)
             return redirect("home")
+        else:
+            return render(request, "auths/register.html", {"form": form})
 
 
 class ActivateView(View):

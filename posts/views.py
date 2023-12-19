@@ -1,11 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Prefetch, Count
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponseBase, HttpResponse
+from django.views import View
 
 from posts.forms import PostForm, PhotoForm, PhotoFormEdit, HashtagForm
 from posts.models import Post, Photo, Like
@@ -58,6 +60,11 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
             "submit_button": CREATE_POST_SUBMIT,
         },
     )
+
+
+class PostView(LoginRequiredMixin, View):
+
+    def get(self, request: HttpRequest, post_id: int):
 
 
 @login_required
