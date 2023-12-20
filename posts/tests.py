@@ -51,7 +51,7 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             getattr(response, "url", None),
-            reverse("posts:get_user_posts", kwargs={"user_id": self.user.id}),
+            f"{reverse('posts:post_list')}?user={self.user.id}",
         )
 
         test_post = Post.objects.get(pk=3)
@@ -70,13 +70,13 @@ class PostsViewTests(TestCase):
 
     def test_get_user_posts(self):
         response = self.client.get(
-            reverse("posts:get_user_posts", kwargs={"user_id": self.user.id})
+            f"{reverse('posts:post_list')}?user={self.user.id}",
         )
 
         self.assertEqual(response.status_code, 200)
 
     def test_get_feed(self):
-        response = self.client.get(reverse("posts:feed"))
+        response = self.client.get(reverse("posts:post_list"))
 
         self.assertEqual(response.status_code, 200)
 
@@ -93,7 +93,7 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
-            reverse("posts:get_user_posts", kwargs={"user_id": self.user.id}),
+            f"{reverse('posts:post_list')}?user={self.user.id}",
         )
 
     def test_like_post(self):
@@ -130,7 +130,7 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
-            reverse("posts:get_user_posts", kwargs={"user_id": self.user.id}),
+            f"{reverse('posts:post_list')}?user={self.user.id}",
         )
 
     def test_delete_photo(self):
@@ -153,9 +153,7 @@ class PostsViewTests(TestCase):
         post_with_another_hashtag.hashtags.add(another_hashtag)
 
         response = self.client.get(
-            reverse(
-                "posts:posts_by_hashtag", kwargs={"hashtag_id": self.hashtag.id}
-            )
+            f"{reverse('posts:post_list')}?hashtag={self.hashtag.name}"
         )
 
         self.assertContains(response, "Test Caption 1")

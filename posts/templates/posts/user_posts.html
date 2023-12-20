@@ -1,7 +1,7 @@
 {% extends "base_profile.html" %}
 {% load static %}
 {% block main %}
-    {% for post in user.posts.all %}
+    {% for post in posts %}
         <div class="center">
             <div class="post">
                 {% if post.user == request.user %}
@@ -16,7 +16,7 @@
                 </div>
                 <p>{{ post.content }}</p>
                 {% for hashtag in post.hashtags.all %}
-                    <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
+                    <a href="{% url 'posts:post_list' %}?hashtag={{ hashtag.name }}"><span
                             class="hashtag">#{{ hashtag.name }}</span></a>
                 {% endfor %}
                 <p>{{ post.likes_count }} likes</p>

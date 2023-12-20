@@ -2,29 +2,37 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.db.models import Prefetch, Count
+from django.db.models import Count
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpRequest, HttpResponseBase, HttpResponse
-from django.views import View
+from django.http import HttpRequest, HttpResponseBase
+from django.urls import reverse
+from django.views.generic import DetailView, ListView
 
 from posts.forms import PostForm, PhotoForm, PhotoFormEdit, HashtagForm
 from posts.models import Post, Photo, Like
 from DjangoGramm.text_messages import (
-    POST_CREATED_MSG,
+    POST_CREATED_SUCCESS_MSG,
+    POST_CREATED_DENIED_MSG,
     POST_EDIT_DENIED_MSG,
     POST_EDIT_SUCCESS_MSG,
     UNLIKE_DENIED_MSG,
     LIKE_IT_MSG,
     CREATE_POST_SUBMIT,
     UPDATE_POST_SUBMIT,
+    BAD_REQUEST,
+    NOT_HAVE_ACCESS,
 )
 from posts.utils import hashtag_handler
 
 
 @login_required
 def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
+    if user_id != request.user.id:
+        messages.error(request, POST_CREATED_DENIED_MSG)
+        return redirect(request.META.get("HTTP_REFERER", "home"))
+
     if request.method == "POST":
         post_form = PostForm(request.POST)
         photo_form = PhotoForm(request.POST, request.FILES)
@@ -43,8 +51,8 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
             hashtags = hashtag_form.cleaned_data.get("hashtags")
             if hashtags:
                 hashtag_handler(post=post, hashtags=hashtags.split())
-            messages.success(request, POST_CREATED_MSG)
-            return redirect("posts:get_user_posts", user_id=user_id)
+            messages.success(request, POST_CREATED_SUCCESS_MSG)
+            return redirect(f"{reverse('posts:post_list')}?user={user_id}")
     else:
         post_form = PostForm()
         photo_form = PhotoForm()
@@ -62,17 +70,12 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
     )
 
 
-class PostView(LoginRequiredMixin, View):
-
-    def get(self, request: HttpRequest, post_id: int):
-
-
 @login_required
 def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
     post = get_object_or_404(Post, pk=post_id)
     if post.user != request.user:
         messages.error(request, POST_EDIT_DENIED_MSG)
-        return redirect(request.META["HTTP_REFERER"])
+        return redirect(request.META.get("HTTP_REFERER", "home"))
 
     if request.method == "POST":
         post_form = PostForm(request.POST)
@@ -88,9 +91,13 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
                 photo.save()
             hashtags = hashtag_form.cleaned_data.get("hashtags")
             if hashtags:
-                hashtag_handler(post=post, hashtags=hashtags.split())  # type: ignore
+                hashtag_handler(
+                    post=post, hashtags=hashtags.split()  # type: ignore
+                )
             messages.success(request, POST_EDIT_SUCCESS_MSG)
-            return redirect("posts:get_user_posts", user_id=request.user.id)
+            return redirect(
+                f"{reverse('posts:post_list')}?user={request.user.id}"
+            )
     else:
         post_form = PostForm(instance=post)
         photo_form = PhotoFormEdit()
@@ -109,51 +116,95 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
     )
 
 
-@login_required
-def post_detail(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    post = (
-        Post.objects.select_related("user__userprofile")
-        .prefetch_related("photos", "hashtags", "likes")
-        .get(pk=post_id)
-    )
-    return render(request, "posts/post.html", {"post": post})
+class PostDetailView(LoginRequiredMixin, DetailView):
+    model = Post
+    template_name = "posts/post.html"
+    context_object_name = "post"
+    pk_url_kwarg = "post_id"
 
-
-@login_required
-def get_user_posts(request: HttpRequest, user_id: int) -> HttpResponseBase:
-    user = (
-        User.objects.select_related("userprofile")
-        .prefetch_related(
-            Prefetch(
-                "posts",
-                queryset=Post.objects.prefetch_related(
-                    "photos", "hashtags"
-                ).annotate(likes_count=Count("likes")),
-            )
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.select_related("user__userprofile").prefetch_related(
+            "photos", "hashtags", "likes"
         )
-        .get(pk=user_id)
-    )
-    return render(
-        request,
-        "posts/user_posts.html",
-        {"user": user},
-    )
+
+
+class PostsListView(LoginRequiredMixin, ListView):
+    model = Post
+    context_object_name = "posts"
+
+    def _get_query_params(self):
+        hashtag = self.request.GET.get("hashtag")  # type: ignore
+        user_id = self.request.GET.get("user")  # type: ignore
+        return hashtag, user_id
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = self.request.GET.get("user")  # type: ignore
+
+        if user_id:
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                user = None
+            context["profile_user"] = user
+
+        return context
+
+    def get_template_names(self):
+        hashtag, user_id = self._get_query_params()
+        if user_id:
+            return ["posts/user_posts.html"]
+        else:
+            return ["posts/feed.html"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        hashtag, user_id = self._get_query_params()
+        if hashtag:
+            queryset = (
+                queryset.filter(hashtags__name=hashtag)
+                .select_related("user__userprofile")
+                .prefetch_related("photos", "hashtags")
+                .annotate(likes_count=Count("likes"))
+                .order_by("-created_at")
+            )
+        elif user_id:
+            try:
+                user_id = int(user_id)
+            except ValueError as ex:
+                messages.error(BAD_REQUEST, ex)
+                return redirect("home")
+            queryset = (
+                queryset.filter(user__id=user_id)
+                .select_related("user__userprofile")
+                .prefetch_related("photos", "hashtags")
+                .annotate(likes_count=Count("likes"))
+                .order_by("-created_at")
+            )
+
+        return (
+            queryset.select_related("user__userprofile")
+            .prefetch_related("photos", "hashtags")
+            .annotate(likes_count=Count("likes"))
+            .order_by("-created_at")
+        )
 
 
 @login_required
-def get_feed(request: HttpRequest) -> HttpResponseBase:
-    posts = (
-        Post.objects.all()
-        .select_related("user__userprofile")
-        .prefetch_related("photos", "hashtags")
-        .annotate(likes_count=Count("likes"))
-        .order_by("-created_at")
-    )
-    return render(
-        request,
-        "posts/feed.html",
-        {"posts": posts},
-    )
+def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
+    if post_id != request.user.id:
+        messages.error(request, NOT_HAVE_ACCESS)
+        return redirect(request.META.get("HTTP_REFERER", "home"))
+
+    Post.objects.get(pk=post_id).delete()
+    return redirect(f"{reverse('posts:post_list')}?user={request.user.id}")
+
+
+@login_required
+def delete_photo(request: HttpRequest, photo_id: int) -> HttpResponseBase:
+    Photo.objects.get(pk=photo_id).delete()
+    return redirect(request.META.get("HTTP_REFERER", "home"))
 
 
 @login_required
@@ -166,41 +217,6 @@ def like_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
         Like.objects.create(post_id=post_id, user_id=request.user.id)
         messages.success(request, LIKE_IT_MSG)
     return redirect(request.META.get("HTTP_REFERER", "home"))
-
-
-@login_required
-def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    Post.objects.get(pk=post_id).delete()
-    return redirect("posts:get_user_posts", user_id=request.user.id)
-
-
-@login_required
-def delete_photo(request: HttpRequest, photo_id: int) -> HttpResponseBase:
-    Photo.objects.get(pk=photo_id).delete()
-    return redirect(request.META.get("HTTP_REFERER", "home"))
-
-
-@login_required
-def get_posts_by_hashtag(
-    request: HttpRequest, hashtag_id: int
-) -> HttpResponseBase:
-    posts = (
-        Post.objects.select_related("user__userprofile")
-        .filter(hashtags__id=hashtag_id)
-        .prefetch_related("photos", "hashtags", "likes")
-        .order_by("-created_at")
-    )
-    return render(
-        request,
-        "posts/feed.html",
-        {"posts": posts, "user_id": request.user.id},
-    )
-
-
-def temp(request):
-    post = get_object_or_404(Post, pk=1)
-    result = Post.objects.filter(id=post.id, likes__user=request.user.id)
-    return HttpResponse(f"TEMP{result}")
 
 
 @receiver(post_delete, sender=Photo)

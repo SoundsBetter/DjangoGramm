@@ -13,10 +13,10 @@
     <h2 class="center">Likes from:</h2>
     {% for like in post.likes.all %}
         <p class="list_of_users"><a
-                href="{% url 'posts:get_user_posts' like.id %}">
-            {% if like.userprofile.avatar %}
+                href="{% url 'posts:post_list' %}?user={{ like.user.id }}">
+            {% if like.user.userprofile.avatar %}
                 <img class="small_avatar"
-                     src="{{ user.userprofile.avatar.url }}" alt="avatar">
+                     src="{{ like.user.userprofile.avatar.url }}" alt="avatar">
             {% else %}
                 <img class="small_avatar"
                      src="{% static 'images/no_avatar.jpg' %}"
@@ -24,15 +24,11 @@
             {% endif %}
             {{ like.user.username }}
             {% for hashtag in post.hashtags.all %}
-                <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
+                <a href="{% url 'posts:post_list' %}?hashtag={{ hashtag.name }}"><span
                         class="hashtag">#{{ hashtag.name }}</span></a>
             {% endfor %}
         </a></p>
     {% endfor %}
-
-
-
-    </button>
     {% if post.user == request.user %}
         <button class="button">
             <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
