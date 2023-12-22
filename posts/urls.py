@@ -5,19 +5,19 @@ from . import views
 app_name = "posts"
 urlpatterns = [
     path(
-        "feed/",
-        views.get_feed,
-        name="feed",
-    ),
-    path(
         "<int:post_id>/edit/",
         views.edit_post,
         name="edit_post",
     ),
     path(
         "<int:post_id>/",
-        views.PostView.as_view(),
+        views.PostDetailView.as_view(),
         name="post_detail",
+    ),
+    path(
+        "<int:post_id>/delete/",
+        views.delete_post,
+        name="delete_post",
     ),
     path(
         "photos/<int:photo_id>/delete/",
@@ -25,9 +25,9 @@ urlpatterns = [
         name="delete_photo",
     ),
     path(
-        "accounts/<int:user_id>/",
-        views.get_user_posts,
-        name="get_user_posts",
+        "",
+        views.PostsListView.as_view(),
+        name="post_list",
     ),
     path(
         "accounts/<int:user_id>/create/",
@@ -39,10 +39,4 @@ urlpatterns = [
         views.like_post,
         name="like_post",
     ),
-    path(
-        "hashtag/<int:hashtag_id>/",
-        views.get_posts_by_hashtag,
-        name="posts_by_hashtag",
-    ),
-    path("", views.temp),
 ]

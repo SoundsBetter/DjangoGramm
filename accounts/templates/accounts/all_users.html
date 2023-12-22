@@ -3,7 +3,7 @@
 {% block main %}
     {% for user in users %}
         <p class="list_of_users"><a
-                href="{% url 'posts:get_user_posts' user.id %}">
+                href="{% url 'posts:post_list' %}?user={{ user.id }}">
             {% if user.userprofile.avatar %}
                 <img class="small_avatar"
                      src="{{ user.userprofile.avatar.url }}" alt="avatar">
