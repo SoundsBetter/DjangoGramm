@@ -4,7 +4,7 @@
     {% for post in posts %}
         <div class="center">
             <div class="post">
-                <a href="{% url 'posts:get_user_posts' post.user.id %}"><p>
+                <a href="{% url 'posts:post_list' %}?author={{ post.user.id }}"><p>
                     {% if post.user.userprofile.avatar %}
                         <img class="small_avatar"
                              src="{{ post.user.userprofile.avatar.url }}"
@@ -27,10 +27,10 @@
                 {% else %} <p>{{ post.caption }}</p>
                 {% endif %}
                 {% for hashtag in post.hashtags.all %}
-                    <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
+                    <a href="{% url 'posts:post_list' %}?hashtag={{ hashtag.name }}"><span
                             class="hashtag">#{{ hashtag.name }}</span></a>
                 {% endfor %}
-                <p>{{ post.likes.count }} likes</p>
+                <p>{{ post.likes_count }} likes</p>
                 <button class="button"><a
                         href="{% url 'posts:like_post' post.id %}">Like</a>
                 </button>

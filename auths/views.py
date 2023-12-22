@@ -15,6 +15,7 @@ from DjangoGramm.text_messages import (
     REG_SUCCESS_MSG,
     ACTIVATE_SUCCESS_MSG,
     ACTIVATE_ERROR_MSG,
+    LOGIN_FAIL_MSG,
 )
 from auths.utils import send_confirmation_email
 
@@ -89,6 +90,24 @@ class LoginView(View):
             if user is not None:
                 login(request, user)
                 return redirect("accounts:profile", user.id)
+        else:
+            messages.error(request, LOGIN_FAIL_MSG)
+            return redirect("home")
+
+
+def login_view(request: HttpRequest) -> HttpResponseBase:
+    if request.method == "POST":
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect("accounts:profile", user.id)
+    else:
+        form = LoginForm()
+    return render(request, "auths/login.html", {"form": form})
 
 
 class LogoutView(View):
