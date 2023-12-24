@@ -4,9 +4,9 @@
     {% for photo in post.photos.all %}
         <div>
             <p><img src="{{ photo.picture.url }}"
-                    alt="photo"></p>
+                    alt="photo" class="img-fluid" style="width: 500px; height: auto;"></p>
             <p><a href="{% url 'posts:delete_photo' photo.id %}">
-                <button type="submit">delete</button>
+                <button class="btn btn-danger" type="submit">x</button>
             </a></p>
         </div>
     {% endfor %}
@@ -14,6 +14,6 @@
     <form method="post" action="{% url 'posts:post_detail' post_id=post.id %}">
         {% csrf_token %}
         <input type="hidden" name="action" value="delete"/>
-        <button type="submit">DELETE POST</button>
+        <button class="btn btn-danger" type="submit">DELETE POST</button>
     </form>
 {% endblock %}

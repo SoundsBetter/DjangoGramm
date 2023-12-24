@@ -2,34 +2,6 @@
 {% load static %}
 {% block main %}
     {% for post in user.posts.all %}
-        <div class="center">
-            <div class="post">
-                {% if post.user == request.user %}
-                    <a href="{% url 'posts:post_detail' post.id %}">
-                        <p>{{ post.caption }} <-- click for details</p></a>
-                {% else %} <p>{{ post.caption }}</p>
-                {% endif %}
-                <div class="image-container">
-                    {% for photo in post.photos.all %}
-                        <img src="{{ photo.picture.url }}" alt="Photo">
-                    {% endfor %}
-                </div>
-                <p>{{ post.content }}</p>
-                {% for hashtag in post.hashtags.all %}
-                    <a href="{% url 'posts:posts_by_hashtag' hashtag.id %}"><span
-                            class="hashtag">#{{ hashtag.name }}</span></a>
-                {% endfor %}
-                <p>{{ post.likes_count }} likes</p>
-                <button class="button"><a
-                        href="{% url 'posts:like_post' post.id %}">Like</a>
-                </button>
-                {% if post.user == request.user %}
-                    <button class="button">
-                        <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
-                    </button>
-                {% endif %}
-            </div>
-        </div>
+        {% include 'posts/includes/single_post.html' %}
     {% endfor %}
-
 {% endblock %}
