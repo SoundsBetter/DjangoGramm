@@ -89,6 +89,9 @@ class LoginView(View):
             if user is not None:
                 login(request, user)
                 return redirect("accounts:profile", user.id)
+        else:
+            messages.error(request, "INVALID DATA")
+            return redirect(request.META.get("HTTP_REFERER", "home"))
 
 
 class LogoutView(View):
