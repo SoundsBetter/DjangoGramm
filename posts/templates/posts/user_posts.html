@@ -1,7 +1,6 @@
 {% extends "base_profile.html" %}
 {% load static %}
 {% block main %}
-    <h3>{{ user }} posts</h3>
     {% for post in posts %}
         {% include 'posts/includes/single_post.html' %}
     {% endfor %}
