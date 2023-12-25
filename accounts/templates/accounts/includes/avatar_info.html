@@ -3,8 +3,8 @@
      style="{% if orientation != 'vertical' %}transform: scale(0.75);{% endif %}">
 
 
-    {% if profile_user.userprofile.avatar %}
-        <img src="{{ profile_user.userprofile.avatar.url }}" alt="User Avatar"
+    {% if user.userprofile.avatar %}
+        <img src="{{ user.userprofile.avatar.url }}" alt="User Avatar"
              class="rounded-circle"
              style="width: 100px; height: 100px;">
     {% else %}
@@ -14,8 +14,8 @@
              style="width: 100px; height: 100px;">
     {% endif %}
 
-    <h4>{{ profile_user.username }}</h4>
-    {% if profile_user == request.user and orientation == 'vertical' %}
+    <h4>{{ user.username }}</h4>
+    {% if user == request.user and orientation == 'vertical' %}
         <a class="btn btn-outline-warning" href="{% url 'accounts:profile' user_id=user.id %}">edit profile</a>
     {% endif %}
 </div>
