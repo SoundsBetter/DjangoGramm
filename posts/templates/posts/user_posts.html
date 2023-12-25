@@ -2,7 +2,7 @@
 {% load static %}
 {% block main %}
     <h3>{{ user }} posts</h3>
-    {% for post in user.posts.all %}
+    {% for post in posts %}
         {% include 'posts/includes/single_post.html' %}
     {% endfor %}
 {% endblock %}
