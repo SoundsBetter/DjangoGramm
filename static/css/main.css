@@ -1,0 +1,22 @@
+:root {
+  --primary-color: #405de6; /* Instagram blue */
+  --secondary-color: #5851db;
+  --background-color: #ffffff;
+  --text-color: #262626;
+  --accent-color: #e1306c; /* Instagram pink for likes and interactive elements */
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+a {
+  color: var(--primary-color);
+}
+
+.navbar {
+  background-color: var(--secondary-color);
+}
+
+/* ... */
