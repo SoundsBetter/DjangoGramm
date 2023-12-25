@@ -10,22 +10,24 @@
           crossorigin="anonymous">
 
 </head>
-<nav class="navbar navbar-light bg-light">
-    <div class="container">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="d-flex justify-content-between w-100">
+        <button onclick="history.back();" class="btn btn-secondary btn-sm me-3" style="transform: scale(0.7);"><
+        </button>
         <a class="navbar-brand" href="{% url 'home' %}">DjangoGramm</a>
         <ul class="navbar-nav ms-auto flex-row">
             {% if request.user.is_authenticated %}
                 <li class="nav-item me-3"><a class="nav-link"
-                                        href="{% url 'posts:create_post' user.id %}">Create
+                                             href="{% url 'posts:create_post' user.id %}">Create
                     post</a></li>
                 <li class="nav-item me-3"><a class="nav-link"
-                                        href="{% url 'posts:get_user_posts' user.id %}">My
+                                             href="{% url 'posts:get_user_posts' user.id %}">My
                     posts</a></li>
                 <li class="nav-item me-3"><a class="nav-link"
-                                        href="{% url 'posts:feed' %}">Feed</a>
+                                             href="{% url 'posts:feed' %}">Feed</a>
                 </li>
                 <li class="nav-item me-3"><a class="nav-link"
-                                        href="{% url 'auths:logout' %}">Logout</a>
+                                             href="{% url 'auths:logout' %}">Logout</a>
                 </li>
             {% endif %}
         </ul>
@@ -43,7 +45,7 @@
     </div>
 {% endif %}
 {% block content %}
-    <button onclick="history.back();" class="btn btn-secondary">Back</button>
+
 {% endblock %}
 
 </body>

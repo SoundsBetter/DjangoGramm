@@ -15,6 +15,7 @@ from DjangoGramm.text_messages import (
     REG_SUCCESS_MSG,
     ACTIVATE_SUCCESS_MSG,
     ACTIVATE_ERROR_MSG,
+    INVALID_LOGIN_MSG,
 )
 from auths.utils import send_confirmation_email
 
@@ -90,7 +91,7 @@ class LoginView(View):
                 login(request, user)
                 return redirect("accounts:profile", user.id)
         else:
-            messages.error(request, "INVALID DATA")
+            messages.error(request, INVALID_LOGIN_MSG)
             return redirect(request.META.get("HTTP_REFERER", "home"))
 
 
