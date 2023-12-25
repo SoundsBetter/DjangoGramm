@@ -1,0 +1,7 @@
+{% extends "base_profile.html" %}
+{% load static %}
+{% block main %}
+    {% for post in posts %}
+        {% include 'posts/includes/single_post.html' %}
+    {% endfor %}
+{% endblock %}
