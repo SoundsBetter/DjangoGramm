@@ -1,12 +1,31 @@
 {% extends "base.html" %}
-{% block content %}
-    <div class="container-fluid mx-auto text-center">
-        <h1>Log in</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Log in</button>
-        </form>
-    </div>
+{% load crispy_forms_filters %}
 
+{% block content %}
+{#    <div class="min-vh-100 d-flex align-items-center justify-content-center">#}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h1>Log in</h1>
+                        <form method="post" class="row g-3">
+                            {% csrf_token %}
+                            <div class="col-12">
+                                {{ form.username|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.password|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    Log in
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

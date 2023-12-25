@@ -1,7 +1,12 @@
-{% extends "base_profile.html" %}
+{% extends "base.html" %}
 {% load static %}
-{% block main %}
-    {% for post in posts %}
-        {% include 'posts/includes/single_post.html' %}
-    {% endfor %}
+{% block content %}
+    <div class="container">
+        <h4 class="text-center">{{ profile_user }}</h4>
+        {% for post in posts %}
+            <div class="col-md-8 mx-auto">
+                {% include 'posts/includes/single_post.html' %}
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -95,21 +95,6 @@ class LoginView(View):
             return redirect("home")
 
 
-def login_view(request: HttpRequest) -> HttpResponseBase:
-    if request.method == "POST":
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect("accounts:profile", user.id)
-    else:
-        form = LoginForm()
-    return render(request, "auths/login.html", {"form": form})
-
-
 class LogoutView(View):
     def get(self, request: HttpRequest) -> HttpResponseBase:
         logout(request)
