@@ -1,7 +1,28 @@
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ post_form.as_p }}
-    {{ photo_form.as_p }}
-    {{ hashtag_form.as_p }}
-    <button type="submit">{{ submit_button }}</button>
-</form>
+{% load crispy_forms_filters %}
+<div class="container my-4">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">Create Post</h2>
+            <form method="post" enctype="multipart/form-data" class="row g-3">
+                {% csrf_token %}
+
+                <div class="col-md-6">
+                    {{ post_form.caption|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ post_form.content|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ photo_form.picture|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ hashtag_form.hashtags|as_crispy_field }}
+                </div>
+                <div class="col-12">
+                    <button type="submit"
+                            class="btn btn-primary">{{ submit_button }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

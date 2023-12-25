@@ -4,41 +4,8 @@
     {% for post in posts %}
         <div class="center">
             <div class="post">
-                <a href="{% url 'posts:post_list' %}?author={{ post.user.id }}"><p>
-                    {% if post.user.userprofile.avatar %}
-                        <img class="small_avatar"
-                             src="{{ post.user.userprofile.avatar.url }}"
-                             alt="avatar">
-                    {% else %}
-                        <img class="small_avatar"
-                             src="{% static 'images/no_avatar.jpg' %}"
-                             alt="Default Avatar">
-                    {% endif %}
-                    {{ post.user.username }}
-                </p></a>
-                <div class="image-container">
-                    {% for photo in post.photos.all %}
-                        <img src="{{ photo.picture.url }}" alt="Photo">
-                    {% endfor %}
-                </div>
-                {% if post.user == request.user %}
-                    <a href="{% url 'posts:post_detail' post.id %}">
-                        <p>{{ post.caption }} <-- click for details</p></a>
-                {% else %} <p>{{ post.caption }}</p>
-                {% endif %}
-                {% for hashtag in post.hashtags.all %}
-                    <a href="{% url 'posts:post_list' %}?hashtag={{ hashtag.name }}"><span
-                            class="hashtag">#{{ hashtag.name }}</span></a>
-                {% endfor %}
-                <p>{{ post.likes_count }} likes</p>
-                <button class="button"><a
-                        href="{% url 'posts:like_post' post.id %}">Like</a>
-                </button>
-                {% if post.user == request.user %}
-                    <button class="button">
-                        <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
-                    </button>
-                {% endif %}
+                <a href="{% url 'posts:get_user_posts' post.user.id %}" style="text-decoration: none; color: inherit;">{% include 'accounts/includes/avatar_info.html' with user=post.user  %}</a>
+                {% include 'posts/includes/single_post.html' %}
             </div>
         </div>
     {% endfor %}

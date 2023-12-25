@@ -3,11 +3,12 @@
     {{ block.super }} Home
 {% endblock %}
 {% block content %}
-    <div class="home_vertical"></div>
-    <p class="center">
-        <button><a href="{% url 'auths:login' %}">login</a></button>
-    </p>
-    <p class="center">
-        <button><a href="{% url 'auths:register' %}">registration</a></button>
-    </p>
+    <div class="d-flex flex-column align-items-center">
+        <p class="mt-5">
+            <a href="{% url 'auths:login' %}" class="btn btn-primary">login</a>
+        </p>
+        <p>
+            <a href="{% url 'auths:register' %}" class="btn btn-primary">registration</a>
+        </p>
+    </div>
 {% endblock %}
