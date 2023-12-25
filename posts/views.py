@@ -132,6 +132,7 @@ class PostDetailView(LoginRequiredMixin, DetailView):
 class PostsListView(LoginRequiredMixin, ListView):
     model = Post
     context_object_name = "posts"
+    template_name = "posts/feed.html"
 
     def _get_query_params(self):
         hashtag = self.request.GET.get("hashtag")  # type: ignore
@@ -148,15 +149,9 @@ class PostsListView(LoginRequiredMixin, ListView):
             except User.DoesNotExist:
                 user = None
             context["profile_user"] = user
-
-        return context
-
-    def get_template_names(self):
-        hashtag, user_id = self._get_query_params()
-        if user_id:
-            return ["posts/user_posts.html"]
         else:
-            return ["posts/feed.html"]
+            context["profile_user"] = self.request.user
+        return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
