@@ -4,7 +4,7 @@
     {% for post in posts %}
         <div class="center">
             <div class="post">
-                <a href="{% url 'posts:get_user_posts' post.user.id %}" style="text-decoration: none; color: inherit;">{% include 'accounts/includes/avatar_info.html' with user=post.user  %}</a>
+                <a href="{% url 'posts:post_list' %}?user={{ user.id }}" style="text-decoration: none; color: inherit;">{% include 'accounts/includes/avatar_info.html' with user=post.user  %}</a>
                 {% include 'posts/includes/single_post.html' %}
             </div>
         </div>

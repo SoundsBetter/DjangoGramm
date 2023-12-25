@@ -2,7 +2,7 @@
 {% load static %}
 {% block main %}
     {% for user in users %}
-        <a href="{% url 'posts:get_user_posts' user.id %}"
+        <a href="{% url 'posts:post_list' %}?user={{ user.id }}"
            style="text-decoration: none; color: inherit;">
             <div class="d-flex align-items-center">
                 {% include 'accounts/includes/avatar_info.html' %}
