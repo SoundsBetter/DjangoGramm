@@ -193,6 +193,7 @@ class PostsListView(LoginRequiredMixin, ListView):
 
 @login_required
 def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
+    print("!!!!!!!!!!!!!!!!")
     if post_id != request.user.id:
         messages.error(request, NOT_HAVE_ACCESS)
         return redirect(request.META.get("HTTP_REFERER", "home"))
