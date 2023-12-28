@@ -1,12 +1,24 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    <div class="container">
-        <h4 class="text-center">{{ profile_user }}</h4>
-        {% for post in posts %}
-            <div class="col-md-8 mx-auto">
-                {% include 'posts/includes/single_post.html' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="d-flex align-items-center justify-content-center">
+                <img
+                        src="{% if profile_user.userprofile.avatar %}
+                        {{ profile_user.userprofile.avatar.url }}
+                        {% else %}{% static 'images/no_avatar.jpg' %}
+                        {% endif %}"
+                        alt=""
+                        class="rounded-circle p-3"
+                        style="width: 100px; height: 100px;">
+                <h4 class="text-center">{{ profile_user }}</h4>
             </div>
-        {% endfor %}
+            {% for post in posts %}
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    {% include 'posts/includes/single_post.html' %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

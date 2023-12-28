@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
+from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponseBase
 from django.shortcuts import render, redirect
 from django.utils.http import urlsafe_base64_decode
@@ -17,6 +17,7 @@ from DjangoGramm.text_messages import (
     ACTIVATE_ERROR_MSG,
     LOGIN_FAIL_MSG,
 )
+from auths.models import User
 from auths.utils import send_confirmation_email
 
 
@@ -30,23 +31,18 @@ class RegisterView(View):
         if form.is_valid():
             email = form.cleaned_data["email"]
             password = User.objects.make_random_password()
-            username = email
-
             try:
-                User.objects.get(email=email)
-            except User.DoesNotExist:
-                user = User(email=email)
-                user.username = username
-                user.set_password(password)
-                user.is_active = False
-                user.save()
-                send_confirmation_email(user=user, password=password)
-                messages.success(request, REG_SUCCESS_MSG)
+                user = User.objects.create_user(username=email, email=email)
+            except IntegrityError:
+                messages.error(request, USER_EXISTS_MSG % email)
                 return redirect("home")
-            messages.error(request, USER_EXISTS_MSG % email)
+            user.set_password(password)
+            user.is_active = False
+            user.save()
+            send_confirmation_email(user=user, password=password)
+            messages.success(request, REG_SUCCESS_MSG)
             return redirect("home")
-        else:
-            return render(request, "auths/register.html", {"form": form})
+        return render(request, "auths/register.html", {"form": form})
 
 
 class ActivateView(View):
@@ -56,22 +52,20 @@ class ActivateView(View):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-
-            if default_token_generator.check_token(user, token):
-                user.is_active = True
-                user_profile = UserProfile(user_id=user.id)
-                user.save()
-                user_profile.save()
-
-                login(request, user)
-
-                messages.success(request, ACTIVATE_SUCCESS_MSG)
-                return redirect("accounts:profile", user_id=user.id)
-            else:
-                messages.error(request, ACTIVATE_ERROR_MSG)
-                return redirect("home")
-
         except User.DoesNotExist:
+            messages.error(request, ACTIVATE_ERROR_MSG)
+            return redirect("home")
+        if default_token_generator.check_token(user, token):
+            user.is_active = True
+            user_profile = UserProfile(user_id=user.id)
+            user.save()
+            user_profile.save()
+
+            login(request, user)
+
+            messages.success(request, ACTIVATE_SUCCESS_MSG)
+            return redirect("accounts:profile", user_id=user.id)
+        else:
             messages.error(request, ACTIVATE_ERROR_MSG)
             return redirect("home")
 

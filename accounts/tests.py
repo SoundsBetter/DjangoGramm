@@ -1,11 +1,10 @@
-from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
 from accounts.models import UserProfile
+from auths.models import User
 
 
-# Create your tests here.
 class AccountsViewTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -30,10 +29,7 @@ class AccountsViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(
-            response,
-            f"/auths/login/",
-        )
+        self.assertRedirects(response, "/")
 
     def test_profile_another_user(self):
         another_user = User.objects.create(
@@ -90,7 +86,6 @@ class AccountsViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Please correct the errors below.")
         self.assertContains(response, "phone_number")
         self.assertContains(response, "date_of_birth")
 

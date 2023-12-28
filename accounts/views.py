@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
 )
-from django.contrib.auth.models import User
+
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.http import HttpRequest, HttpResponseBase
@@ -15,26 +15,23 @@ from accounts.models import UserProfile
 from DjangoGramm.text_messages import (
     NOT_HAVE_ACCESS,
     PROFILE_UPD_SUCCESS,
-    PROFILE_UPD_ERROR,
     USER_DELETE_SUCCESS_MSG,
 )
 from auths.forms import UserForm
+from auths.models import User
 
 
-class UserAccountView(LoginRequiredMixin, View):
+class UserAccountView(View):
     template_name = "accounts/profile.html"
 
     def dispatch(
         self, request: HttpRequest, *args, **kwargs
     ) -> HttpResponseBase:
-        if not request.user.is_authenticated:
-            return redirect("auths:login")
-
         user_id = kwargs.get("user_id")
         if request.user.id != user_id:
+            print(request.user.pk)
             messages.error(request, NOT_HAVE_ACCESS)
             return redirect(request.META.get("HTTP_REFERER", "home"))
-
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, user_id: int) -> HttpResponseBase:
@@ -64,8 +61,6 @@ class UserAccountView(LoginRequiredMixin, View):
             profile_form.save()
             messages.success(request, PROFILE_UPD_SUCCESS)
             return redirect("accounts:profile", user_id=user_id)
-        else:
-            messages.error(request, PROFILE_UPD_ERROR)
 
         return render(
             request,

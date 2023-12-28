@@ -4,7 +4,6 @@ PHONE_FMT = (
 )
 NOT_HAVE_ACCESS = "You do not have access to this page."
 PROFILE_UPD_SUCCESS = "Profile was updated successfully."
-PROFILE_UPD_ERROR = "Please correct the errors below."
 EMAIL_MSG = (
     "Thank you for registering! Please click the link below to "
     "confirm your email:\n\n%(link)s\n\n Your password: %(password)s"

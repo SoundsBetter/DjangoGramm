@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -10,6 +9,7 @@ from django.http import HttpRequest, HttpResponseBase
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
 
+from auths.models import User
 from posts.forms import PostForm, PhotoForm, PhotoFormEdit, HashtagForm
 from posts.models import Post, Photo, Like
 from DjangoGramm.text_messages import (

@@ -2,26 +2,19 @@
 {% load crispy_forms_filters %}
 
 {% block content %}
-{#    <div class="min-vh-100 d-flex align-items-center justify-content-center">#}
     <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
+        <div class="row">
+            <div class="col-6 mx-auto">
                 <div class="card">
                     <div class="card-body">
-                        <h1>Log in</h1>
-                        <form method="post" class="row g-3">
+                        <h3 class="card-title text-center">Log in</h3>
+                        <form method="post">
                             {% csrf_token %}
-                            <div class="col-12">
-                                {{ form.username|as_crispy_field }}
-                            </div>
-                            <div class="col-12">
-                                {{ form.password|as_crispy_field }}
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary">
-                                    Log in
-                                </button>
-                            </div>
+                            {{ form.username|as_crispy_field }}
+                            {{ form.password|as_crispy_field }}
+                            <button type="submit" class="btn btn-primary">
+                                Log in
+                            </button>
                         </form>
                     </div>
                 </div>

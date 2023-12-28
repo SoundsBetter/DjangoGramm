@@ -1,10 +1,11 @@
 from functools import partial
 
-from django.contrib.auth.models import User
+
 from django.db import models
 
 from DjangoGramm.settings import AVATARS
 from DjangoGramm.utils import directory_path
+from auths.models import User
 
 
 class UserProfile(models.Model):

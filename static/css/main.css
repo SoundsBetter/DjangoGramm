@@ -1,22 +1,32 @@
-:root {
-  --primary-color: #405de6; /* Instagram blue */
-  --secondary-color: #5851db;
-  --background-color: #ffffff;
-  --text-color: #262626;
-  --accent-color: #e1306c; /* Instagram pink for likes and interactive elements */
+.card-post {
+    max-width: 600px;
 }
 
-body {
-  background-color: var(--background-color);
-  color: var(--text-color);
+.custom-btn {
+    border: none;
+    background-color: transparent;
+    color: grey;
 }
 
-a {
-  color: var(--primary-color);
+.custom-btn:hover {
+    color: black;
 }
 
-.navbar {
-  background-color: var(--secondary-color);
+.no-border {
+    border: none !important; /* Видалення кордонів */
 }
 
-/* ... */
+.bottom-border-only {
+    border: none; /* Remove all borders */
+    border-bottom: 2px solid black; /* Add bottom border, adjust color & width as needed */
+}
+
+.navbar-brand {
+    font-family: 'Lobster', sans-serif;
+    font-size: 36px/* Назва шрифту, змініть на вибраний вами */
+}
+
+.navbar-nav {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 23px/* Назва шрифту, змініть на вибраний вами */
+}

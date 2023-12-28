@@ -1,17 +1,17 @@
 from io import BytesIO
 
 from PIL import Image
-from django.contrib.auth.models import User
+
 from django.contrib.messages import get_messages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 from django.urls import reverse
 
+from auths.models import User
 from posts.models import Post, Hashtag, Photo
 from DjangoGramm.text_messages import UNLIKE_DENIED_MSG, LIKE_IT_MSG
 
 
-# Create your tests here.
 class PostsViewTests(TestCase):
     def setUp(self):
         self.client = Client()
