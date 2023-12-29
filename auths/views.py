@@ -18,7 +18,7 @@ from DjangoGramm.text_messages import (
     LOGIN_FAIL_MSG,
 )
 from auths.models import User
-from auths.utils import send_confirmation_email
+from auths.utils import send_confirmation_email, make_random_password
 
 
 class RegisterView(View):
@@ -30,7 +30,7 @@ class RegisterView(View):
         form = EmailOnlyRegistrationForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data["email"]
-            password = User.objects.make_random_password()
+            password = make_random_password(length=5)
             try:
                 user = User.objects.create_user(username=email, email=email)
             except IntegrityError:
@@ -57,17 +57,16 @@ class ActivateView(View):
             return redirect("home")
         if default_token_generator.check_token(user, token):
             user.is_active = True
-            user_profile = UserProfile(user_id=user.id)
+            user_profile = UserProfile(user_id=user.pk)
             user.save()
             user_profile.save()
 
             login(request, user)
 
             messages.success(request, ACTIVATE_SUCCESS_MSG)
-            return redirect("accounts:profile", user_id=user.id)
-        else:
-            messages.error(request, ACTIVATE_ERROR_MSG)
-            return redirect("home")
+            return redirect("accounts:profile", user_id=user.pk)
+        messages.error(request, ACTIVATE_ERROR_MSG)
+        return redirect("home")
 
 
 class LoginView(View):
@@ -83,7 +82,7 @@ class LoginView(View):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("accounts:profile", user.id)
+                return redirect("accounts:profile", user.pk)
         else:
             messages.error(request, LOGIN_FAIL_MSG)
             return redirect("home")

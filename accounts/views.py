@@ -28,8 +28,7 @@ class UserAccountView(View):
         self, request: HttpRequest, *args, **kwargs
     ) -> HttpResponseBase:
         user_id = kwargs.get("user_id")
-        if request.user.id != user_id:
-            print(request.user.pk)
+        if request.user.pk != user_id:
             messages.error(request, NOT_HAVE_ACCESS)
             return redirect(request.META.get("HTTP_REFERER", "home"))
         return super().dispatch(request, *args, **kwargs)
@@ -89,7 +88,7 @@ class AllUsersView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["user_id"] = self.request.user.id
+        context["user_id"] = self.request.user.pk
         context["profile_user"] = self.request.user
         return context
 

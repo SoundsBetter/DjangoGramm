@@ -29,7 +29,7 @@ from posts.utils import hashtag_handler
 
 @login_required
 def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
-    if user_id != request.user.id:
+    if user_id != request.user.pk:
         messages.error(request, POST_CREATED_DENIED_MSG)
         return redirect(request.META.get("HTTP_REFERER", "home"))
 
@@ -96,7 +96,7 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
                 )
             messages.success(request, POST_EDIT_SUCCESS_MSG)
             return redirect(
-                f"{reverse('posts:post_list')}?user={request.user.id}"
+                f"{reverse('posts:post_list')}?user={request.user.pk}"
             )
     else:
         post_form = PostForm(instance=post)
@@ -109,7 +109,7 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
             "post_form": post_form,
             "photo_form": photo_form,
             "hashtag_form": hashtag_form,
-            "user_id": request.user.id,
+            "user_id": request.user.pk,
             "post": post,
             "submit_button": UPDATE_POST_SUBMIT,
         },
@@ -193,13 +193,12 @@ class PostsListView(LoginRequiredMixin, ListView):
 
 @login_required
 def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    print("!!!!!!!!!!!!!!!!")
-    if post_id != request.user.id:
+    if post_id != request.user.pk:
         messages.error(request, NOT_HAVE_ACCESS)
         return redirect(request.META.get("HTTP_REFERER", "home"))
 
     Post.objects.get(pk=post_id).delete()
-    return redirect(f"{reverse('posts:post_list')}?user={request.user.id}")
+    return redirect(f"{reverse('posts:post_list')}?user={request.user.pk}")
 
 
 @login_required
@@ -211,11 +210,11 @@ def delete_photo(request: HttpRequest, photo_id: int) -> HttpResponseBase:
 @login_required
 def like_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
     post = get_object_or_404(Post, pk=post_id)
-    if post.likes.filter(user_id=request.user.id).exists():
-        Like.objects.filter(post_id=post_id, user_id=request.user.id).delete()
+    if post.likes.filter(user_id=request.user.pk).exists():
+        Like.objects.filter(post_id=post_id, user_id=request.user.pk).delete()
         messages.error(request, UNLIKE_DENIED_MSG)
     else:
-        Like.objects.create(post_id=post_id, user_id=request.user.id)
+        Like.objects.create(post_id=post_id, user_id=request.user.pk)
         messages.success(request, LIKE_IT_MSG)
     return redirect(request.META.get("HTTP_REFERER", "home"))
 

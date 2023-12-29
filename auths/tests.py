@@ -30,7 +30,7 @@ class AuthsViewsTests(TestCase):
         self.assertTrue(self.user.is_authenticated)
         self.assertEqual(
             getattr(response, "url", None),
-            reverse("accounts:profile", kwargs={"user_id": self.user.id}),
+            reverse("accounts:profile", kwargs={"user_id": self.user.pk}),
         )
 
     def test_register_view_valid(self):
@@ -89,7 +89,7 @@ class AuthsViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             getattr(response, "url", None),
-            reverse("accounts:profile", kwargs={"user_id": user.id}),
+            reverse("accounts:profile", kwargs={"user_id": user.pk}),
         )
 
         messages = list(get_messages(response.wsgi_request))

@@ -30,3 +30,13 @@
     font-family: 'Montserrat', sans-serif;
     font-size: 23px/* Назва шрифту, змініть на вибраний вами */
 }
+
+.btn-primary {
+    background: #0095F6;
+    border-color: #0095F6;
+}
+
+.btn-primary:hover {
+    background: #1877F2;
+    border-color: #1877F2;
+}
