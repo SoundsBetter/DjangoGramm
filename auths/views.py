@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponseBase
 from django.shortcuts import render, redirect
 from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
+from django.utils.encoding import force_str, DjangoUnicodeDecodeError
 from django.views import View
 
 from accounts.models import UserProfile
@@ -52,21 +52,21 @@ class ActivateView(View):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-        except User.DoesNotExist:
+            if not default_token_generator.check_token(user, token):
+                messages.error(request, ACTIVATE_ERROR_MSG)
+                return redirect("home")
+
+        except (ValueError, DjangoUnicodeDecodeError, User.DoesNotExist):
             messages.error(request, ACTIVATE_ERROR_MSG)
             return redirect("home")
-        if default_token_generator.check_token(user, token):
-            user.is_active = True
-            user_profile = UserProfile(user_id=user.pk)
-            user.save()
-            user_profile.save()
 
-            login(request, user)
-
-            messages.success(request, ACTIVATE_SUCCESS_MSG)
-            return redirect("accounts:profile", user_id=user.pk)
-        messages.error(request, ACTIVATE_ERROR_MSG)
-        return redirect("home")
+        user.is_active = True
+        user_profile = UserProfile(user_id=user.pk)
+        user.save()
+        user_profile.save()
+        login(request, user)
+        messages.success(request, ACTIVATE_SUCCESS_MSG)
+        return redirect("accounts:profile", user_id=user.pk)
 
 
 class LoginView(View):
