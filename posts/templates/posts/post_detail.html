@@ -1,0 +1,35 @@
+{% extends "base_profile.html" %}
+{% load static %}
+{% block main %}
+    <div class="container-fluid mx-auto">
+        <h6>{{ post.caption }}</h6>
+        <div>
+            {% for photo in post.photos.all %}
+                <p><img class="img-fluid mb-1" src="{{ photo.picture.url }}"
+                        alt=""></p>
+            {% endfor %}
+        </div>
+        <p>{{ post.content }}</p>
+        <p>{{ post.likes.count }} likes</p>
+        <h6>Likes from:</h6>
+        {% for like in post.likes.all %}
+            <div class="row">
+                <a class="text-left"
+                   href="{% url 'posts:post_list' %}?user={{ like.user.id }}">{% include 'accounts/includes/avatar_info.html' with user=like.user %}</a>
+            </div>
+        {% endfor %}
+        {% for hashtag in post.hashtags.all %}
+            <a href="{% url 'posts:post_list' %}?hashtag={{ hashtag.name }}"><span
+                    class="hashtag">#{{ hashtag.name }}</span></a>
+
+        {% endfor %}
+        <div>
+            {% if post.user == request.user %}
+                <a href="{% url 'posts:edit_post' post.id %}"
+                   class="btn btn-lg custom-btn me-2">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    </div>{% endblock %}

@@ -1,5 +1,5 @@
 {% load static %}
-<div class="{% if orientation == 'vertical' %}d-flex flex-column align-items-center{% else %}d-flex align-items-center{% endif %}"
+<div class="{% if orientation == 'vertical' %}d-flex flex-column align-items-center{% else %}d-flex align-items-center w-25{% endif %}"
      style="{% if orientation != 'vertical' %}transform: scale(0.75);{% endif %}">
     {% if user.userprofile.avatar %}
         <img src="{{ user.userprofile.avatar.url }}" alt="User Avatar"

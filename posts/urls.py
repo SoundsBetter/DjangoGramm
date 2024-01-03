@@ -39,4 +39,9 @@ urlpatterns = [
         views.like_post,
         name="like_post",
     ),
+    path(
+        "temp/",
+        views.temp,
+        name="temp",
+    ),
 ]

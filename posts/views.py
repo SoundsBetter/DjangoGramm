@@ -118,7 +118,7 @@ def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
 
 class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
-    template_name = "posts/post.html"
+    template_name = "posts/post_detail.html"
     context_object_name = "post"
     pk_url_kwarg = "post_id"
 
@@ -223,3 +223,8 @@ def like_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
 @receiver(post_delete, sender=Photo)
 def delete_post_media_files(sender, instance, **kwargs):
     instance.picture.delete(save=False)
+
+
+def temp(request):
+    post = Post.objects.get(pk=2)
+    return render(request, "posts/temp.html", {"post": post})
