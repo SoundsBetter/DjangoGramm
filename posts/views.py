@@ -45,8 +45,8 @@ def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
             post = post_form.save(commit=False)
             post.user = request.user
             post.save()
-            photo = photo_form.save(commit=False)
-            photo.post = post
+            photo = Photo.objects.create(post=post)
+            photo.picture = photo_form.cleaned_data.get("picture")
             photo.save()
             hashtags = hashtag_form.cleaned_data.get("hashtags")
             if hashtags:
@@ -193,11 +193,12 @@ class PostsListView(LoginRequiredMixin, ListView):
 
 @login_required
 def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    if post_id != request.user.pk:
+    post = Post.objects.get(pk=post_id)
+    if post.user.pk != request.user.pk:
         messages.error(request, NOT_HAVE_ACCESS)
         return redirect(request.META.get("HTTP_REFERER", "home"))
 
-    Post.objects.get(pk=post_id).delete()
+    post.delete()
     return redirect(f"{reverse('posts:post_list')}?user={request.user.pk}")
 
 

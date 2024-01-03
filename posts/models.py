@@ -1,7 +1,7 @@
 from functools import partial
 
 from django.db import models
-
+from django.db.models import UniqueConstraint
 
 from DjangoGramm.settings import PICTURES
 from DjangoGramm.utils import directory_path
@@ -16,6 +16,7 @@ class Post(models.Model):
     content = models.TextField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     hashtags = models.ManyToManyField("Hashtag", blank=True)
 
@@ -41,4 +42,6 @@ class Like(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ["post", "user"]
+        constraints = [
+            UniqueConstraint(fields=["post", "user"], name="user_like_post")
+        ]

@@ -3,17 +3,15 @@
 {% block main %}
     {% for photo in post.photos.all %}
         <div>
-            <p><img src="{{ photo.picture.url }}"
-                    alt="photo" class="img-fluid" style="width: 500px; height: auto;"></p>
+            <p><img src="{% if photo.picture %}{{ photo.picture.url }}{% else %}!!!!!{% endif %}"
+                    alt="photo" class="img-fluid"
+                    style="width: 500px; height: auto;"></p>
             <p><a href="{% url 'posts:delete_photo' photo.id %}">
                 <button class="btn btn-danger" type="submit">x</button>
             </a></p>
         </div>
     {% endfor %}
     {% include "posts/includes/post_form.html" with submit_button=submit_button %}
-    <form method="post" action="{% url 'posts:post_detail' post_id=post.id %}">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="delete"/>
-        <button class="btn btn-danger" type="submit">DELETE POST</button>
-    </form>
+    <a href="{% url 'posts:delete_post' post_id=post.id %}"
+       class="btn btn-danger">DELETE POST</a>
 {% endblock %}

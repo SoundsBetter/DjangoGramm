@@ -5,7 +5,7 @@ from django.db.models import Model
 
 from posts.models import Hashtag
 
-M = t.TypeVar("M", bound=t.Type[Model])
+M = t.TypeVar("M", bound=Model)
 
 
 def hashtag_handler(post: M, hashtags: list[str]) -> None:
