@@ -1,17 +1,75 @@
 {% extends "base_profile.html" %}
 {% load static %}
 {% block main %}
+    <!-- Existing photos -->
     {% for photo in post.photos.all %}
         <div>
-            <p><img src="{% if photo.picture %}{{ photo.picture.url }}{% else %}!!!!!{% endif %}"
-                    alt="photo" class="img-fluid"
-                    style="width: 500px; height: auto;"></p>
-            <p><a href="{% url 'posts:delete_photo' photo.id %}">
+            <img src="{% if photo.picture %}{{ photo.picture.url }}{% else %}!!!!!{% endif %}"
+                 alt="photo" class="img-fluid"
+                 style="width: 500px; height: auto;">
+            <p><a href="{% url 'posts:delete_photo' photo.pk %}">
                 <button class="btn btn-danger" type="submit">x</button>
             </a></p>
         </div>
     {% endfor %}
     {% include "posts/includes/post_form.html" with submit_button=submit_button %}
-    <a href="{% url 'posts:delete_post' post_id=post.id %}"
-       class="btn btn-danger">DELETE POST</a>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-danger" data-id="{{ post.pk }}" data-toggle="modal" data-target="#deletePostModal">
+      DELETE POST
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="deletePostModal" tabindex="-1" role="dialog" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deletePostModalLabel">Підтвердження видалення</h5>
+          </div>
+          <div class="modal-body">
+            Ви впевнені, що хочете видалити цей пост?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Скасувати</button>
+            <button type="button" class="btn btn-danger" id="confirmDelete">Видалити</button>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(document).ready(function(){
+    // Збережіть postId при відкритті модального вікна
+    var postId = null;
+    $('.btn-danger[data-toggle="modal"]').click(function(){
+        postId = $(this).data('id'); // Збережіть ID поста
+    });
+
+    $('#confirmDelete').click(function(){
+        if (!postId) {
+            console.log("Post ID is not set");
+            return;  // Перевірте, чи postId встановлено
+        }
+        $.ajax({
+            url: "{% url 'posts:delete_post' post.pk %}",  // Update this to your URL in your routing
+            type: 'DELETE',  // or 'POST' if your view requires
+            data: {
+                'id': postId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(result) {
+                // On success, hide the modal and possibly remove the post element from the DOM
+                $('#deletePostModal').modal('hide');
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                // Handle errors here
+                console.log("Error on deletion: ", error);
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

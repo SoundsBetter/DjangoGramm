@@ -5,18 +5,18 @@ from . import views
 app_name = "posts"
 urlpatterns = [
     path(
-        "<int:post_id>/edit/",
-        views.edit_post,
+        "<int:pk>/edit/",
+        views.UpdatePost.as_view(),
         name="edit_post",
     ),
     path(
-        "<int:post_id>/",
+        "<int:pk>/",
         views.PostDetailView.as_view(),
         name="post_detail",
     ),
     path(
-        "<int:post_id>/delete/",
-        views.delete_post,
+        "<int:pk>/delete/",
+        views.DeletePost.as_view(),
         name="delete_post",
     ),
     path(
@@ -31,7 +31,7 @@ urlpatterns = [
     ),
     path(
         "accounts/<int:user_id>/create/",
-        views.create_post,
+        views.CreatePostView.as_view(),
         name="create_post",
     ),
     path(

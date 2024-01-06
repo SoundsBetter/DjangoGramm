@@ -6,8 +6,14 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponseBase
-from django.urls import reverse
-from django.views.generic import DetailView, ListView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import (
+    DetailView,
+    ListView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
 
 from auths.models import User
 from posts.forms import PostForm, PhotoForm, PhotoFormEdit, HashtagForm
@@ -27,100 +33,107 @@ from DjangoGramm.text_messages import (
 from posts.utils import hashtag_handler
 
 
-@login_required
-def create_post(request: HttpRequest, user_id: int) -> HttpResponseBase:
-    if user_id != request.user.pk:
-        messages.error(request, POST_CREATED_DENIED_MSG)
-        return redirect(request.META.get("HTTP_REFERER", "home"))
+class CreatePostView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = "posts/create_post.html"
 
-    if request.method == "POST":
-        post_form = PostForm(request.POST)
-        photo_form = PhotoForm(request.POST, request.FILES)
-        hashtag_form = HashtagForm(request.POST)
-        if (
-            post_form.is_valid()
-            and photo_form.is_valid()
-            and hashtag_form.is_valid()
-        ):
-            post = post_form.save(commit=False)
-            post.user = request.user
-            post.save()
-            photo = Photo.objects.create(post=post)
-            photo.picture = photo_form.cleaned_data.get("picture")
+    def get_success_url(self):
+        return f'{reverse_lazy("posts:post_list")}?user={self.request.user.pk}'
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.kwargs.get("user_id") != self.request.user.pk:
+            messages.error(self.request, POST_CREATED_DENIED_MSG)
+            return redirect(self.request.META.get("HTTP_REFERER", "home"))
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.user = self.request.user
+        post.save()
+
+        photo_form = PhotoForm(self.request.POST, self.request.FILES)
+        if photo_form.is_valid():
+            photo = photo_form.save(commit=False)
+            photo.post = post
             photo.save()
+
+        hashtag_form = HashtagForm(self.request.POST)
+        if hashtag_form.is_valid():
             hashtags = hashtag_form.cleaned_data.get("hashtags")
             if hashtags:
                 hashtag_handler(post=post, hashtags=hashtags.split())
-            messages.success(request, POST_CREATED_SUCCESS_MSG)
-            return redirect(f"{reverse('posts:post_list')}?user={user_id}")
-    else:
-        post_form = PostForm()
-        photo_form = PhotoForm()
-        hashtag_form = HashtagForm()
-    return render(
-        request,
-        "posts/create_post.html",
-        {
-            "post_form": post_form,
-            "photo_form": photo_form,
-            "hashtag_form": hashtag_form,
-            "user_id": user_id,
-            "submit_button": CREATE_POST_SUBMIT,
-        },
-    )
+
+        messages.success(self.request, POST_CREATED_SUCCESS_MSG)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context["photo_form"] = PhotoForm(
+                self.request.POST, self.request.FILES
+            )
+            context["hashtag_form"] = HashtagForm(self.request.POST)
+        else:
+            context["photo_form"] = PhotoForm()
+            context["hashtag_form"] = HashtagForm()
+            context["submit_button"] = CREATE_POST_SUBMIT
+            context["title"] = "Create"
+        return context
 
 
-@login_required
-def edit_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    post = get_object_or_404(Post, pk=post_id)
-    if post.user != request.user:
-        messages.error(request, POST_EDIT_DENIED_MSG)
-        return redirect(request.META.get("HTTP_REFERER", "home"))
+class UpdatePost(LoginRequiredMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = "posts/edit_post.html"
 
-    if request.method == "POST":
-        post_form = PostForm(request.POST)
-        photo_form = PhotoFormEdit(request.POST, request.FILES)
-        hashtag_form = HashtagForm(request.POST)
-        if post_form.is_valid() and hashtag_form.is_valid():
-            post.caption = post_form.cleaned_data["caption"]
-            post.content = post_form.cleaned_data["content"]
-            post.save()
-            if "picture" in request.FILES:
-                photo = photo_form.save(commit=False)
-                photo.post = post
-                photo.save()
+    def __init__(self):
+        self.object = None
+
+    def get_success_url(self):
+        return f'{reverse_lazy("posts:post_list")}?user={self.request.user.pk}'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = get_object_or_404(Post, pk=kwargs["pk"])
+        if request.user != self.object.user:
+            messages.error(self.request, POST_EDIT_SUCCESS_MSG)
+            return redirect(self.request.META.get("HTTP_REFERER", "home"))
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        photo_form = PhotoForm(self.request.POST, self.request.FILES)
+        if photo_form.is_valid():
+            photo = photo_form.save(commit=False)
+            photo.post = self.object
+            photo.save()
+
+        hashtag_form = HashtagForm(self.request.POST)
+        if hashtag_form.is_valid():
             hashtags = hashtag_form.cleaned_data.get("hashtags")
             if hashtags:
-                hashtag_handler(
-                    post=post, hashtags=hashtags.split()  # type: ignore
-                )
-            messages.success(request, POST_EDIT_SUCCESS_MSG)
-            return redirect(
-                f"{reverse('posts:post_list')}?user={request.user.pk}"
+                hashtag_handler(post=self.object, hashtags=hashtags.split())
+        messages.success(self.request, POST_EDIT_SUCCESS_MSG)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.method == "POST":
+            context["photo_form"] = PhotoFormEdit(
+                self.request.POST, self.request.FILES
             )
-    else:
-        post_form = PostForm(instance=post)
-        photo_form = PhotoFormEdit()
-        hashtag_form = HashtagForm()
-    return render(
-        request,
-        "posts/edit_post.html",
-        {
-            "post_form": post_form,
-            "photo_form": photo_form,
-            "hashtag_form": hashtag_form,
-            "user_id": request.user.pk,
-            "post": post,
-            "submit_button": UPDATE_POST_SUBMIT,
-        },
-    )
+            context["hashtag_form"] = HashtagForm(self.request.POST)
+        else:
+            context["photo_form"] = PhotoFormEdit()
+            context["hashtag_form"] = HashtagForm()
+            context["submit_button"] = UPDATE_POST_SUBMIT
+            context["title"] = "Update"
+        return context
 
 
 class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
     template_name = "posts/post_detail.html"
     context_object_name = "post"
-    pk_url_kwarg = "post_id"
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -160,6 +173,12 @@ class PostsListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = (
+            queryset.select_related("user__userprofile")
+            .prefetch_related("photos", "hashtags")
+            .annotate(likes_count=Count("likes"))
+            .order_by("-created_at")
+        )
         hashtag, user_id = self._get_query_params()
         if hashtag:
             queryset = (
@@ -182,18 +201,19 @@ class PostsListView(LoginRequiredMixin, ListView):
                 .annotate(likes_count=Count("likes"))
                 .order_by("-created_at")
             )
+        return queryset
 
-        return (
-            queryset.select_related("user__userprofile")
-            .prefetch_related("photos", "hashtags")
-            .annotate(likes_count=Count("likes"))
-            .order_by("-created_at")
-        )
+
+class DeletePost(LoginRequiredMixin, DeleteView):
+    model = Post
+
+    def get_success_url(self):
+        return f'{reverse_lazy("posts:post_list")}?user={self.request.user.pk}'
 
 
 @login_required
-def delete_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    post = Post.objects.get(pk=post_id)
+def delete_post(request: HttpRequest, pk: int) -> HttpResponseBase:
+    post = Post.objects.get(pk=pk)
     if post.user.pk != request.user.pk:
         messages.error(request, NOT_HAVE_ACCESS)
         return redirect(request.META.get("HTTP_REFERER", "home"))
