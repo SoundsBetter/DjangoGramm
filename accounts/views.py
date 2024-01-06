@@ -73,6 +73,8 @@ class UserAccountView(View):
 
     def delete(self, request: HttpRequest, user_id: int) -> HttpResponseBase:
         user = get_object_or_404(User, pk=user_id)
+        if hasattr(user, "userprofile"):
+            user.userprofile.delete()
         user.delete()
         messages.success(request, USER_DELETE_SUCCESS_MSG)
         return redirect("home")
@@ -91,8 +93,3 @@ class AllUsersView(LoginRequiredMixin, ListView):
         context["user_id"] = self.request.user.pk
         context["profile_user"] = self.request.user
         return context
-
-
-@receiver(post_delete, sender=UserProfile)
-def delete_user_media_files(sender, instance, **kwargs):
-    instance.avatar.delete(save=False)

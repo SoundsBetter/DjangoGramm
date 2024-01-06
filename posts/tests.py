@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from auths.models import User
 from posts.models import Post, Hashtag, Photo
-from DjangoGramm.text_messages import UNLIKE_DENIED_MSG, LIKE_IT_MSG
+from DjangoGramm.text_messages import UNLIKE_IT_MSG, LIKE_IT_MSG
 
 
 class PostsViewTests(TestCase):
@@ -117,7 +117,7 @@ class PostsViewTests(TestCase):
         messages = list(get_messages(response.wsgi_request))
 
         self.assertEqual(str(messages[0]), LIKE_IT_MSG)
-        self.assertEqual(str(messages[1]), UNLIKE_DENIED_MSG)
+        self.assertEqual(str(messages[1]), UNLIKE_IT_MSG)
 
     def test_delete_post(self):
         self.assertTrue(Post.objects.filter(pk=self.post_1.id).exists())

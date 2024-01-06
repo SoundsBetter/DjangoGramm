@@ -23,6 +23,12 @@ class UserProfile(models.Model):
         blank=True,
         null=True,
     )
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.username
+
+    def delete(self, *args, **kwargs):
+        file = self.avatar
+        super().delete(*args, **kwargs)
+        file.delete(save=False)

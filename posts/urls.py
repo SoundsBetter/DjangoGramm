@@ -39,9 +39,4 @@ urlpatterns = [
         views.LikePostView.as_view(),
         name="like_post",
     ),
-    path(
-        "temp/",
-        views.temp,
-        name="temp",
-    ),
 ]

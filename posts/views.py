@@ -1,11 +1,8 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpRequest, HttpResponseBase
+from django.shortcuts import redirect
+from django.http import HttpRequest
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -23,7 +20,7 @@ from DjangoGramm.text_messages import (
     POST_CREATED_SUCCESS_MSG,
     POST_CREATED_DENIED_MSG,
     POST_EDIT_SUCCESS_MSG,
-    UNLIKE_DENIED_MSG,
+    UNLIKE_IT_MSG,
     LIKE_IT_MSG,
     CREATE_POST_SUBMIT,
     UPDATE_POST_SUBMIT,
@@ -210,21 +207,12 @@ class DeletePhoto(UserIsOwnerMixin, LoginRequiredMixin, DeleteView):
 
 class LikePostView(LoginRequiredMixin, View):
     def get(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
-        if post.likes.filter(user_id=request.user.pk).exists():
-            Like.objects.filter(post_id=pk, user_id=request.user.pk).delete()
-            messages.error(request, UNLIKE_DENIED_MSG)
-        else:
+        try:
+            like = Like.objects.get(post_id=pk, user_id=request.user.pk)
+            like.delete()
+            messages.error(request, UNLIKE_IT_MSG)
+        except Like.DoesNotExist:
             Like.objects.create(post_id=pk, user_id=request.user.pk)
             messages.success(request, LIKE_IT_MSG)
+
         return redirect(request.META.get("HTTP_REFERER", "home"))
-
-
-@receiver(post_delete, sender=Photo)
-def delete_post_media_files(sender, instance, **kwargs):
-    instance.picture.delete(save=False)
-
-
-def temp(request):
-    post = Post.objects.get(pk=2)
-    return render(request, "posts/temp.html", {"post": post})

@@ -29,6 +29,11 @@ class Photo(models.Model):
         upload_to=partial(directory_path, base_folder=PICTURES)
     )
 
+    def delete(self, *args, **kwargs):
+        file = self.picture
+        super().delete(*args, **kwargs)
+        file.delete(save=False)
+
 
 class Hashtag(models.Model):
     name = models.CharField(max_length=50, unique=True)
