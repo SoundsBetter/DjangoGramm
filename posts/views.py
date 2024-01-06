@@ -6,7 +6,8 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponseBase
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import (
     DetailView,
     ListView,
@@ -21,16 +22,15 @@ from posts.models import Post, Photo, Like
 from DjangoGramm.text_messages import (
     POST_CREATED_SUCCESS_MSG,
     POST_CREATED_DENIED_MSG,
-    POST_EDIT_DENIED_MSG,
     POST_EDIT_SUCCESS_MSG,
     UNLIKE_DENIED_MSG,
     LIKE_IT_MSG,
     CREATE_POST_SUBMIT,
     UPDATE_POST_SUBMIT,
     BAD_REQUEST,
-    NOT_HAVE_ACCESS,
 )
 from posts.utils import hashtag_handler
+from posts.mixins import UserIsOwnerMixin
 
 
 class CreatePostView(LoginRequiredMixin, CreateView):
@@ -41,7 +41,7 @@ class CreatePostView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return f'{reverse_lazy("posts:post_list")}?user={self.request.user.pk}'
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request: HttpRequest, *args, **kwargs):
         if self.kwargs.get("user_id") != self.request.user.pk:
             messages.error(self.request, POST_CREATED_DENIED_MSG)
             return redirect(self.request.META.get("HTTP_REFERER", "home"))
@@ -82,23 +82,13 @@ class CreatePostView(LoginRequiredMixin, CreateView):
         return context
 
 
-class UpdatePost(LoginRequiredMixin, UpdateView):
+class UpdatePost(UserIsOwnerMixin, LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = "posts/edit_post.html"
 
-    def __init__(self):
-        self.object = None
-
     def get_success_url(self):
         return f'{reverse_lazy("posts:post_list")}?user={self.request.user.pk}'
-
-    def dispatch(self, request, *args, **kwargs):
-        self.object = get_object_or_404(Post, pk=kwargs["pk"])
-        if request.user != self.object.user:
-            messages.error(self.request, POST_EDIT_SUCCESS_MSG)
-            return redirect(self.request.META.get("HTTP_REFERER", "home"))
-        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         photo_form = PhotoForm(self.request.POST, self.request.FILES)
@@ -204,40 +194,30 @@ class PostsListView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class DeletePost(LoginRequiredMixin, DeleteView):
+class DeletePost(UserIsOwnerMixin, LoginRequiredMixin, DeleteView):
     model = Post
 
     def get_success_url(self):
         return f'{reverse_lazy("posts:post_list")}?user={self.request.user.pk}'
 
 
-@login_required
-def delete_post(request: HttpRequest, pk: int) -> HttpResponseBase:
-    post = Post.objects.get(pk=pk)
-    if post.user.pk != request.user.pk:
-        messages.error(request, NOT_HAVE_ACCESS)
+class DeletePhoto(UserIsOwnerMixin, LoginRequiredMixin, DeleteView):
+    model = Photo
+
+    def get_success_url(self):
+        return self.request.META.get("HTTP_REFERER", "home")
+
+
+class LikePostView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        if post.likes.filter(user_id=request.user.pk).exists():
+            Like.objects.filter(post_id=pk, user_id=request.user.pk).delete()
+            messages.error(request, UNLIKE_DENIED_MSG)
+        else:
+            Like.objects.create(post_id=pk, user_id=request.user.pk)
+            messages.success(request, LIKE_IT_MSG)
         return redirect(request.META.get("HTTP_REFERER", "home"))
-
-    post.delete()
-    return redirect(f"{reverse('posts:post_list')}?user={request.user.pk}")
-
-
-@login_required
-def delete_photo(request: HttpRequest, photo_id: int) -> HttpResponseBase:
-    Photo.objects.get(pk=photo_id).delete()
-    return redirect(request.META.get("HTTP_REFERER", "home"))
-
-
-@login_required
-def like_post(request: HttpRequest, post_id: int) -> HttpResponseBase:
-    post = get_object_or_404(Post, pk=post_id)
-    if post.likes.filter(user_id=request.user.pk).exists():
-        Like.objects.filter(post_id=post_id, user_id=request.user.pk).delete()
-        messages.error(request, UNLIKE_DENIED_MSG)
-    else:
-        Like.objects.create(post_id=post_id, user_id=request.user.pk)
-        messages.success(request, LIKE_IT_MSG)
-    return redirect(request.META.get("HTTP_REFERER", "home"))
 
 
 @receiver(post_delete, sender=Photo)

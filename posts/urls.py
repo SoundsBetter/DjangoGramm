@@ -20,8 +20,8 @@ urlpatterns = [
         name="delete_post",
     ),
     path(
-        "photos/<int:photo_id>/delete/",
-        views.delete_photo,
+        "photos/<int:pk>/delete/",
+        views.DeletePhoto.as_view(),
         name="delete_photo",
     ),
     path(
@@ -35,8 +35,8 @@ urlpatterns = [
         name="create_post",
     ),
     path(
-        "like/<int:post_id>/",
-        views.like_post,
+        "like/<int:pk>/",
+        views.LikePostView.as_view(),
         name="like_post",
     ),
     path(

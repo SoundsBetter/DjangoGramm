@@ -15,15 +15,15 @@
         {% endfor %}
         <p>{{ post.likes_count }} likes</p>
         <div class="d-flex">
-            <a href="{% url 'posts:like_post' post.id %}"
+            <a href="{% url 'posts:like_post' post.pk %}"
                class="btn btn-lg custom-btn me-2">
                 <i class="fa-regular fa-heart"></i>
             </a>
-            <a href="{% url 'posts:post_detail' post.id %}"
+            <a href="{% url 'posts:post_detail' post.pk %}"
                class="btn btn-lg custom-btn me-2"><i
                     class="fa-solid fa-magnifying-glass"></i></a>
             {% if post.user == request.user %}
-                <a href="{% url 'posts:edit_post' post.id %}"
+                <a href="{% url 'posts:edit_post' post.pk %}"
                    class="btn btn-lg custom-btn me-2">
                     <i class="fa-solid fa-gear"></i>
                 </a>
