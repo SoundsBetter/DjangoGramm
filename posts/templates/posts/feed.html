@@ -2,15 +2,12 @@
 {% load static %}
 {% block main %}
     {% for post in posts %}
-        <div class="col">
-            <div class="card card-post m-auto">
-                <a href="{% url 'posts:post_list' %}?user={{ post.user.id }}"
-                   style="text-decoration: none; color: inherit;">{% include 'accounts/includes/avatar_info.html' with user=post.user %}</a>
+        <div class="container" style="width: 550px";>
+            <a href="{% url 'posts:post_list' %}?user={{ post.user.id }}"
+               style="text-decoration: none; color: inherit;">{% include 'accounts/includes/avatar_info.html' with user=post.user %}</a>
 
-                {% include 'posts/includes/single_post.html' %}
-            </div>
+            {% include 'posts/includes/single_post.html' %}
         </div>
-
 
     {% endfor %}
 {% endblock %}

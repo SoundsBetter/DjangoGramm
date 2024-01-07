@@ -7,8 +7,6 @@
             <img src="
 
 
-
-
                     {% if photo.picture %}{{ photo.picture.url }}{% else %}!!!!!{% endif %}"
                  alt="photo" class="img-fluid"
                  style="width: 500px; height: auto;">
@@ -48,8 +46,8 @@
     {% endfor %}
     {% include "posts/includes/post_form.html" with submit_button=submit_button %}
 
-    <button type="button" class="btn btn-danger" data-id="{{ post.pk }}"
-            data-bs-toggle="modal" data-bs-target="#deletePostModal">
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+            data-bs-target="#deletePostModal">
         DELETE POST
     </button>
 

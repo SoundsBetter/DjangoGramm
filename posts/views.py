@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.shortcuts import redirect
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -206,13 +206,31 @@ class DeletePhoto(UserIsOwnerMixin, LoginRequiredMixin, DeleteView):
 
 
 class LikePostView(LoginRequiredMixin, View):
-    def get(self, request, pk):
+    def post(self, request, pk):
+        response_data = {"liked": False, "likes_count": 0}
+        post = Post.objects.get(pk=pk)
         try:
-            like = Like.objects.get(post_id=pk, user_id=request.user.pk)
+            like = Like.objects.get(post=post, user=request.user)
             like.delete()
-            messages.error(request, UNLIKE_IT_MSG)
+            response_data["liked"] = False
+            print("DELETE!!!!!!!!!!!!!!!!!!")
         except Like.DoesNotExist:
-            Like.objects.create(post_id=pk, user_id=request.user.pk)
-            messages.success(request, LIKE_IT_MSG)
+            Like.objects.create(post=post, user=request.user)
+            response_data["liked"] = True
+            print("CREATE!!!!!!!!!!!!!!!!!!")
+        response_data["likes_count"] = post.likes.count()
+        return JsonResponse(response_data)
 
-        return redirect(request.META.get("HTTP_REFERER", "home"))
+
+class CheckLikeView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        response_data = {"liked": False}
+        print("!!!!!!!!!!!!!!")
+        try:
+            Like.objects.get(post=post, user=request.user)
+            response_data["liked"] = True
+
+        except Like.DoesNotExist:
+            pass
+        return JsonResponse(response_data)

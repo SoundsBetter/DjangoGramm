@@ -10,6 +10,7 @@
 
 .custom-btn:hover {
     color: black;
+    scale: 1.4;
 }
 
 .no-border {
@@ -23,12 +24,12 @@
 
 .navbar-brand {
     font-family: 'Lobster', sans-serif;
-    font-size: 36px/* Назва шрифту, змініть на вибраний вами */
+    font-size: 36px /* Назва шрифту, змініть на вибраний вами */
 }
 
 .navbar-nav {
     font-family: 'Montserrat', sans-serif;
-    font-size: 20px/* Назва шрифту, змініть на вибраний вами */
+    font-size: 20px /* Назва шрифту, змініть на вибраний вами */
 }
 
 .btn-primary {
@@ -43,4 +44,20 @@
 
 .btn-logout {
     font-size: 24px;
+}
+
+.image-container {
+    width: 550px;
+    height: 550px;
+    background-color: grey; /* Сірий фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Обрізаємо зайве */
+}
+
+.image-container img {
+    max-width: 550px;
+    max-height: 550px;
+    object-fit: scale-down; /* Масштабує зображення без обрізання */
 }
