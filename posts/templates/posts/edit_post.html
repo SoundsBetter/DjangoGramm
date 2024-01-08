@@ -7,6 +7,7 @@
             <img src="
 
 
+
                     {% if photo.picture %}{{ photo.picture.url }}{% else %}!!!!!{% endif %}"
                  alt="photo" class="img-fluid"
                  style="width: 500px; height: auto;">
@@ -33,7 +34,7 @@
                                   method="post">
                                 {% csrf_token %}
                                 <button type="button" class="btn btn-secondary"
-                                        data-dismiss="modal">Cancel
+                                        data-bs-dismiss="modal">Cancel
                                 </button>
                                 <input type="submit" class="btn btn-danger"
                                        value="Delete">
@@ -67,7 +68,7 @@
                           method="post">
                         {% csrf_token %}
                         <button type="button" class="btn btn-secondary"
-                                data-dismiss="modal">Cancel
+                                data-bs-dismiss="modal">Cancel
                         </button>
                         <input type="submit" class="btn btn-danger"
                                value="Delete">
