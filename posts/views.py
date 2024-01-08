@@ -20,8 +20,6 @@ from DjangoGramm.text_messages import (
     POST_CREATED_SUCCESS_MSG,
     POST_CREATED_DENIED_MSG,
     POST_EDIT_SUCCESS_MSG,
-    UNLIKE_IT_MSG,
-    LIKE_IT_MSG,
     CREATE_POST_SUBMIT,
     UPDATE_POST_SUBMIT,
     BAD_REQUEST,
@@ -213,11 +211,9 @@ class LikePostView(LoginRequiredMixin, View):
             like = Like.objects.get(post=post, user=request.user)
             like.delete()
             response_data["liked"] = False
-            print("DELETE!!!!!!!!!!!!!!!!!!")
         except Like.DoesNotExist:
             Like.objects.create(post=post, user=request.user)
             response_data["liked"] = True
-            print("CREATE!!!!!!!!!!!!!!!!!!")
         response_data["likes_count"] = post.likes.count()
         return JsonResponse(response_data)
 

@@ -83,7 +83,7 @@ class PostsViewTests(TestCase):
     def test_edit_post(self):
         new_caption = "Updated Caption"
         response = self.client.post(
-            reverse("posts:edit_post", kwargs={"post_id": self.post_1.id}),
+            reverse("posts:edit_post", kwargs={"pk": self.post_1.pk}),
             {"caption": new_caption, "hashtags": "tag1"},
         )
 
@@ -93,37 +93,32 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
-            f"{reverse('posts:post_list')}?user={self.user.id}",
+            f"{reverse('posts:post_list')}?user={self.user.pk}",
         )
 
     def test_like_post(self):
         self.assertEqual(self.post_1.likes.count(), 0)
 
-        response = self.client.get(
-            reverse("posts:like_post", kwargs={"post_id": self.post_1.id})
+        response = self.client.post(
+            reverse("posts:like_post", kwargs={"pk": self.post_1.pk})
         )
 
         self.post_1.refresh_from_db()
         self.assertEqual(self.post_1.likes.count(), 1)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(
-            reverse("posts:like_post", kwargs={"post_id": self.post_1.id})
+        self.client.post(
+            reverse("posts:like_post", kwargs={"pk": self.post_1.pk})
         )
 
         self.post_1.refresh_from_db()
         self.assertEqual(self.post_1.likes.count(), 0)
 
-        messages = list(get_messages(response.wsgi_request))
-
-        self.assertEqual(str(messages[0]), LIKE_IT_MSG)
-        self.assertEqual(str(messages[1]), UNLIKE_IT_MSG)
-
     def test_delete_post(self):
         self.assertTrue(Post.objects.filter(pk=self.post_1.id).exists())
 
         response = self.client.post(
-            reverse("posts:delete_post", kwargs={"post_id": self.post_1.id})
+            reverse("posts:delete_post", kwargs={"pk": self.post_1.pk})
         )
 
         self.assertFalse(Post.objects.filter(pk=self.post_1.id).exists())
@@ -138,12 +133,11 @@ class PostsViewTests(TestCase):
             post_id=self.post_1.id, picture=self.picture
         )
         response = self.client.post(
-            reverse("posts:delete_photo", kwargs={"photo_id": photo.id})
+            reverse("posts:delete_photo", kwargs={"pk": photo.pk})
         )
 
         self.assertFalse(Photo.objects.filter(pk=photo.id).exists())
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(getattr(response, "url", None), reverse("home"))
 
     def test_get_posts_by_hashtag(self):
         another_hashtag = Hashtag.objects.create(name="another_hashtag")

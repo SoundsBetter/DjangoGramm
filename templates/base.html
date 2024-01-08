@@ -24,15 +24,15 @@
     {% if request.user.is_authenticated %}
         <div class="navbar-nav mx-auto">
             <a class="nav-link me-3"
-               href="{% url 'accounts:profile' user_id=user.id %}">Edit
+               href="{% url 'accounts:profile' user_id=user.id %}"><i class="fa-regular fa-user"></i> Edit
                 profile</a>
             <a class="nav-link me-3"
-               href="{% url 'posts:create_post' user.id %}">Create post</a>
+               href="{% url 'posts:create_post' user.id %}"><i class="fa-regular fa-square-plus"></i> Create post</a>
             <a class="nav-link me-3"
-               href="{% url 'posts:post_list' %}?user={{ user.id }}">My
+               href="{% url 'posts:post_list' %}?user={{ user.id }}"><i class="fa-solid fa-house"></i> My
                 posts</a>
             <a class="nav-link me-3"
-               href="{% url 'posts:post_list' %}">Feed</a>
+               href="{% url 'posts:post_list' %}"><i class="fa-regular fa-images"></i> Feed</a>
 
         </div>
         <a class="nav-link ms-auto me-4 btn-logout"
