@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
@@ -206,7 +206,7 @@ class DeletePhoto(UserIsOwnerMixin, LoginRequiredMixin, DeleteView):
 class LikePostView(LoginRequiredMixin, View):
     def post(self, request, pk):
         response_data = {"liked": False, "likes_count": 0}
-        post = Post.objects.get(pk=pk)
+        post = get_object_or_404(Post, pk=pk)
         try:
             like = Like.objects.get(post=post, user=request.user)
             like.delete()

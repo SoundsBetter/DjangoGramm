@@ -3,9 +3,11 @@
 {% block main %}
     {% for post in posts %}
         <div class="container border-bottom" style="width: 575px">
+            <div class="col-sm-12">
             <a href="{% url 'posts:post_list' %}?user={{ post.user.id }}"
                style="text-decoration: none; color: inherit;">{% include 'accounts/includes/avatar_info.html' with user=post.user %}</a>
             {% include 'posts/includes/single_post.html' %}
+            </div>
         </div>
     {% endfor %}
 {% endblock %}

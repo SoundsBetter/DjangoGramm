@@ -32,3 +32,19 @@ class UserProfile(models.Model):
         file = self.avatar
         super().delete(*args, **kwargs)
         file.delete(save=False)
+
+
+class Follower(models.Model):
+    follower = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="followers"
+    )
+    followed = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="following"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    constraints = [
+        models.UniqueConstraint(
+            fields=["follower", "following"], name="user_follow"
+        )
+    ]

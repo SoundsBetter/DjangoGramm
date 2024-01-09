@@ -3,15 +3,13 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin,
 )
 
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
-from django.http import HttpRequest, HttpResponseBase
+from django.http import HttpRequest, HttpResponseBase, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import ListView
 
 from accounts.forms import UserProfileForm
-from accounts.models import UserProfile
+from accounts.models import Follower
 from DjangoGramm.text_messages import (
     NOT_HAVE_ACCESS,
     PROFILE_UPD_SUCCESS,
@@ -47,7 +45,7 @@ class UserAccountView(View):
         )
 
     def post(self, request: HttpRequest, user_id: int) -> HttpResponseBase:
-        if request.POST.get("action") == "delete":
+        if request.POST.get("action") == "delete":  # type:ignore
             return self.delete(request, user_id)
 
         user_form = UserForm(request.POST, instance=request.user)
@@ -93,3 +91,35 @@ class AllUsersView(LoginRequiredMixin, ListView):
         context["user_id"] = self.request.user.pk
         context["profile_user"] = self.request.user
         return context
+
+
+class FollowUserView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        response_data = {"followed": True, "followers_count": 0}
+        user_to_follow = get_object_or_404(User, pk=pk)
+        if user_to_follow != request.user:
+            try:
+                follower = Follower.objects.get(
+                    follower=request.user, followed=user_to_follow
+                )
+                follower.delete()
+                response_data["followed"] = False
+            except Follower.DoesNotExist:
+                Follower.objects.create(
+                    follower=request.user, followed=user_to_follow
+                )
+                response_data["followed"] = True
+            response_data["followers_count"] = user_to_follow.followers.count()
+            return JsonResponse(response_data)
+
+
+class CheckFollowView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        response_data = {"followed": False}
+        try:
+            Follower.objects.get(follower=request.user, followed=user)
+            response_data["followed"] = True
+        except Follower.DoesNotExist:
+            pass
+        return JsonResponse(response_data)
