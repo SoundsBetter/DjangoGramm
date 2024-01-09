@@ -36,10 +36,10 @@ class UserProfile(models.Model):
 
 class Follower(models.Model):
     follower = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="followers"
+        User, on_delete=models.CASCADE, related_name="following"
     )
     followed = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="following"
+        User, on_delete=models.CASCADE, related_name="followers"
     )
     created_at = models.DateTimeField(auto_now_add=True)
 

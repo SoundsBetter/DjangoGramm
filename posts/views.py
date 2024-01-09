@@ -146,7 +146,7 @@ class PostsListView(LoginRequiredMixin, ListView):
             except User.DoesNotExist:
                 user = None
             context["profile_user"] = user
-
+        context["feed_name"] = "All posts"
         return context
 
     def get_template_names(self):
@@ -187,6 +187,32 @@ class PostsListView(LoginRequiredMixin, ListView):
                 .order_by("-created_at")
             )
         return queryset
+
+
+class PostsFollowingListView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = "posts/feed.html"
+    context_object_name = "posts"
+
+    def _get_followed_users(self):
+        return User.objects.filter(followers__follower=self.request.user)
+
+    def get_queryset(self):
+        followed_users = self._get_followed_users()
+        queryset = super().get_queryset()
+        queryset = (
+            queryset.filter(user__in=followed_users)
+            .select_related("user__userprofile")
+            .prefetch_related("photos", "hashtags")
+            .annotate(likes_count=Count("likes"))
+            .order_by("-created_at")
+        )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["feed_name"] = "Following"
+        return context
 
 
 class DeletePost(UserIsOwnerMixin, LoginRequiredMixin, DeleteView):

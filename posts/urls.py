@@ -30,6 +30,11 @@ urlpatterns = [
         name="post_list",
     ),
     path(
+        "/following/",
+        views.PostsFollowingListView.as_view(),
+        name="post_following_list",
+    ),
+    path(
         "accounts/<int:user_id>/create/",
         views.CreatePostView.as_view(),
         name="create_post",

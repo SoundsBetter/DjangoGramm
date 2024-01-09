@@ -1,6 +1,7 @@
 {% extends "base_profile.html" %}
 {% load static %}
 {% block main %}
+    <p class="text-center" style="font-family: 'Lobster', sans-serif; font-size: xx-large">{{ feed_name }}</p>
     {% for post in posts %}
         <div class="container border-bottom" style="width: 575px">
             <div class="col-sm-12">

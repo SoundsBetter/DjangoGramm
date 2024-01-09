@@ -78,9 +78,9 @@ class UserAccountView(View):
         return redirect("home")
 
 
-class AllUsersView(LoginRequiredMixin, ListView):
+class UsersListView(LoginRequiredMixin, ListView):
     model = User
-    template_name = "accounts/all_users.html"
+    template_name = "accounts/users_list.html"
     context_object_name = "users"
 
     def get_queryset(self):
@@ -88,8 +88,35 @@ class AllUsersView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["user_id"] = self.request.user.pk
-        context["profile_user"] = self.request.user
+        context["list_name"] = "All users"
+        return context
+
+
+class FollowingList(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "accounts/users_list.html"
+    context_object_name = "users"
+
+    def get_queryset(self):
+        return User.objects.filter(followers__follower=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["list_name"] = "Following"
+        return context
+
+
+class FollowersList(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "accounts/users_list.html"
+    context_object_name = "users"
+
+    def get_queryset(self):
+        return User.objects.filter(following__followed=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["list_name"] = "Followers"
         return context
 
 

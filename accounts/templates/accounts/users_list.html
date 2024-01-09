@@ -1,6 +1,8 @@
 {% extends "base_profile.html" %}
 {% load static %}
 {% block main %}
+    <h4 class="col-6 text-center"
+        style="font-family: 'Lobster', sans-serif; font-size: xx-large">{{ list_name }}</h4>
     {% for user in users %}
         <a href="{% url 'posts:post_list' %}?user={{ user.id }}"
            style="text-decoration: none; color: inherit;">

@@ -7,17 +7,20 @@
             <div class="col-md-2 align-items-center-center">
                 <p class="d-flex flex-column align-items-center">
                     <a href="{% url 'accounts:profile' user_id=user.id %}"><img
-                            src="{{ user.userprofile.avatar.url }}"
+                            src="{% if user.userprofile.avatar %}
+                        {{ user.userprofile.avatar.url }}
+                        {% else %}{% static 'images/no_avatar.jpg' %}
+                        {% endif %}"
                             alt="User Avatar"
                             class="rounded-circle"
-                            style="width: 100px; height: 100px; {% if orientation != 'vertical' %}transform: scale(0.65);{% endif %}"></a>
+                            style="width: 100px; height: 100px;"></a>
                 </p>
                 <p class="d-flex flex-column align-items-center mb-5">
-                    <a class="menu-btn" href="#"><i
+                    <a class="menu-btn" href="{% url 'accounts:following' %}"><i
                             class="fa-solid fa-person-running"></i></a>
                 </p>
                 <p class="d-flex flex-column align-items-center mb-5">
-                    <a class="menu-btn" href="#"><i
+                    <a class="menu-btn" href="{% url 'accounts:followers' %}"><i
                             class="fa-solid fa-users"></i></a></p>
             </div>
             <div class="col-lg-10">
