@@ -141,10 +141,7 @@ class PostsListView(LoginRequiredMixin, ListView):
         user_id = self.request.GET.get("user")  # type: ignore
 
         if user_id:
-            try:
-                user = User.objects.get(pk=user_id)
-            except User.DoesNotExist:
-                user = None
+            user = get_object_or_404(User, pk=user_id)
             context["profile_user"] = user
         context["feed_name"] = "All posts"
         return context
