@@ -70,3 +70,10 @@
     margin-right: auto; /* Автоматичний відступ справа */
     display: block; /* Встановлює зображення як блоковий елемент */
 }
+
+.carousel-indicators [data-bs-target] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%; /* Додає круглу форму */
+    background-color: #fff; /* Білий колір фону для індикаторів */
+}
