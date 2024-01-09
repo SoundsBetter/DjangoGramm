@@ -222,7 +222,6 @@ class CheckLikeView(LoginRequiredMixin, View):
     def get(self, request, pk):
         post = Post.objects.get(pk=pk)
         response_data = {"liked": False}
-        print("!!!!!!!!!!!!!!")
         try:
             Like.objects.get(post=post, user=request.user)
             response_data["liked"] = True

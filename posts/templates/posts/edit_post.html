@@ -1,21 +1,15 @@
 {% extends "base_profile.html" %}
 {% load static %}
 {% block main %}
-    <!-- Existing photos -->
     {% for photo in post.photos.all %}
         <div>
-            <img src="
-
-
-
-                    {% if photo.picture %}{{ photo.picture.url }}{% else %}!!!!!{% endif %}"
+            <img src="{% if photo.picture %}{{ photo.picture.url }}{% endif %}"
                  alt="photo" class="img-fluid"
                  style="width: 500px; height: auto;">
-
             <button type="button" class="btn btn-danger"
                     data-id="{{ photo.pk }}"
                     data-bs-toggle="modal" data-bs-target="#deletePhotoModal">
-                x
+                <i class="fa-regular fa-trash-can"></i>
             </button>
             <div class="modal fade" id="deletePhotoModal" tabindex="-1"
                  role="dialog"

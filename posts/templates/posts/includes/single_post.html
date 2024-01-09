@@ -1,14 +1,33 @@
 <h6>{{ post.caption }}</h6>
-{% for photo in post.photos.all %}
-    <div class="text-center">
-        <div class="image-container">
-            <img src="{% if photo.picture %}{{ photo.picture.url }}{% endif %}"
-                 alt="Photo"
-                 class="img-fluid"
-                 style="width: 550px; height: 550px; object-fit: cover;">
-        </div>
+
+<div id="PostCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        {% for photo in post.photos.all %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="
+
+
+                        {% if photo.picture %}{{ photo.picture.url }}{% endif %}"
+                     alt=""
+                     class="img-fluid"
+                     style="width: 550px; height: 550px; object-fit: cover;">
+            </div>
+        {% endfor %}
     </div>
-{% endfor %}
+    <button class="carousel-control-prev" type="button"
+            data-bs-target="#PostCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"
+                      aria-hidden="true"></span>
+        <span class="visually-hidden">Prev</span>
+    </button>
+    <button class="carousel-control-next" type="button"
+            data-bs-target="#PostCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"
+                      aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
 <p>{{ post.content }}</p>
 {% for hashtag in post.hashtags.all %}
     <a href="{% url 'posts:post_list' %}?hashtag={{ hashtag.name }}"><span
@@ -17,7 +36,7 @@
 <p class="like-count"
    data-post-id="{{ post.pk }}">{{ post.likes_count }} likes</p>
 
-<div class="d-flex">
+<div class="d-flex mb-3">
     <button type="button" data-id="{{ post.pk }}"
             class="like-btn btn btn-lg custom-btn me-2">
         <i class="fa-regular fa-heart"></i>
