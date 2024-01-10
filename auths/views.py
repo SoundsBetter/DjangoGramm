@@ -1,0 +1,94 @@
+from django.contrib import messages
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.tokens import default_token_generator
+from django.db import IntegrityError
+from django.http import HttpRequest, HttpResponseBase
+from django.shortcuts import render, redirect
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str, DjangoUnicodeDecodeError
+from django.views import View
+
+from accounts.models import UserProfile
+from auths.forms import EmailOnlyRegistrationForm, LoginForm
+from DjangoGramm.text_messages import (
+    USER_EXISTS_MSG,
+    REG_SUCCESS_MSG,
+    ACTIVATE_SUCCESS_MSG,
+    ACTIVATE_ERROR_MSG,
+    LOGIN_FAIL_MSG,
+)
+from auths.models import User
+from auths.utils import send_confirmation_email, make_random_password
+
+
+class RegisterView(View):
+    def get(self, request: HttpRequest) -> HttpResponseBase:
+        form = EmailOnlyRegistrationForm()
+        return render(request, "auths/register.html", {"form": form})
+
+    def post(self, request: HttpRequest) -> HttpResponseBase:
+        form = EmailOnlyRegistrationForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            password = make_random_password(length=5)
+            try:
+                user = User.objects.create_user(username=email, email=email)
+            except IntegrityError:
+                messages.error(request, USER_EXISTS_MSG % email)
+                return redirect("home")
+            user.set_password(password)
+            user.is_active = False
+            user.save()
+            send_confirmation_email(user=user, password=password)
+            messages.success(request, REG_SUCCESS_MSG)
+            return redirect("home")
+        return render(request, "auths/register.html", {"form": form})
+
+
+class ActivateView(View):
+    def get(
+        self, request: HttpRequest, uidb64: str, token: str
+    ) -> HttpResponseBase:
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+            if not default_token_generator.check_token(user, token):
+                messages.error(request, ACTIVATE_ERROR_MSG)
+                return redirect("home")
+
+        except (ValueError, DjangoUnicodeDecodeError, User.DoesNotExist):
+            messages.error(request, ACTIVATE_ERROR_MSG)
+            return redirect("home")
+
+        user.is_active = True
+        user_profile = UserProfile(user_id=user.pk)
+        user.save()
+        user_profile.save()
+        login(request, user)
+        messages.success(request, ACTIVATE_SUCCESS_MSG)
+        return redirect("accounts:profile", user_id=user.pk)
+
+
+class LoginView(View):
+    def get(self, request: HttpRequest) -> HttpResponseBase:
+        form = LoginForm()
+        return render(request, "auths/login.html", {"form": form})
+
+    def post(self, request: HttpRequest) -> HttpResponseBase:
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect("accounts:profile", user.pk)
+        else:
+            messages.error(request, LOGIN_FAIL_MSG)
+            return redirect("home")
+
+
+class LogoutView(View):
+    def get(self, request: HttpRequest) -> HttpResponseBase:
+        logout(request)
+        return redirect("home")

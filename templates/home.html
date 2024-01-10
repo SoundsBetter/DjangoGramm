@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ block.super }} Home
+{% endblock %}
+{% block content %}
+    <div class="d-flex flex-column align-items-center">
+        <p class="mt-5">
+            <a href="{% url 'auths:login' %}" class="btn btn-primary">login</a>
+        </p>
+        <p>
+            <a href="{% url 'auths:register' %}" class="btn btn-primary">registration</a>
+        </p>
+    </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base_profile.html" %}
+{% load static %}
+{% block main %}
+    <div class="container-fluid mx-auto">
+        <h6>{{ post.caption }}</h6>
+
+        <div id="postPhotosCarousel" class="carousel slide" style="background-color: #3b3e3d"
+             data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for photo in post.photos.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ photo.picture.url }}" class="carousel-photo"
+                             alt="">
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button"
+                    data-bs-target="#postPhotosCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"
+                      aria-hidden="true"></span>
+                <span class="visually-hidden">Prev</span>
+            </button>
+            <button class="carousel-control-next" type="button"
+                    data-bs-target="#postPhotosCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"
+                      aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <p>{{ post.content }}</p>
+        <p>{{ post.likes.count }} likes</p>
+        <h6>Likes from:</h6>
+        {% for like in post.likes.all %}
+            <div class="row">
+                <a class="text-left"
+                   href="{% url 'posts:post_list' %}?user={{ like.user.id }}">
+                    {% include 'accounts/includes/avatar_info.html' with user=like.user %}
+                </a>
+            </div>
+        {% endfor %}
+        {% for hashtag in post.hashtags.all %}
+            <a href="{% url 'posts:post_list' %}?hashtag={{ hashtag.name }}">
+                <span class="hashtag">#{{ hashtag.name }}</span>
+            </a>
+        {% endfor %}
+        <div>
+            {% if post.user == request.user %}
+                <a href="{% url 'posts:edit_post' post.id %}"
+                   class="btn btn-lg custom-btn me-2">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

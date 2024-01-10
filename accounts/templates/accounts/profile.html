@@ -1,0 +1,32 @@
+{% extends "base_profile.html" %}
+{% load crispy_forms_filters %}
+{% load static %}
+{% block main %}
+    <div class="card mb-5">
+        <div class="card-body">
+            <h2 class="card-title">Update Profile</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ user_form.username|as_crispy_field }}
+                {{ profile_form.avatar|as_crispy_field }}
+                {{ user_form.first_name|as_crispy_field }}
+                {{ user_form.last_name|as_crispy_field }}
+                {{ user_form.email|as_crispy_field }}
+                {{ profile_form.phone_number|as_crispy_field }}
+                {{ profile_form.date_of_birth|as_crispy_field }}
+                <button type="submit" class="btn btn-primary">Update
+                    Profile
+                </button>
+            </form>
+        </div>
+    </div>
+    <form method="post"
+          action="{% url 'accounts:profile' user_id=request.user.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete"/>
+        <button type="submit" class="btn btn-danger"
+                onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+            Delete User
+        </button>
+    </form>
+{% endblock %}

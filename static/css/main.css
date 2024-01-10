@@ -1,0 +1,103 @@
+.card-post {
+    max-width: 600px;
+}
+
+.custom-btn {
+    border: none;
+    background-color: transparent;
+    color: grey;
+}
+
+.custom-btn:hover {
+    color: black;
+    scale: 1.4;
+}
+
+.menu-btn {
+    border: none;
+    background-color: transparent;
+    color: rgb(54, 54, 54);
+    scale: 1.7;
+}
+
+.menu-btn:hover {
+    color: black;
+    scale: 2;
+}
+
+.follow-btn {
+    border: none;
+    background-color: transparent;
+    color: rgba(54, 54, 54, 0.51);
+    scale: 1.7;
+}
+
+.follow-btn:hover {
+    color: black;
+    scale: 2;
+}
+
+.no-border {
+    border: none !important; /* Видалення кордонів */
+}
+
+.bottom-border-only {
+    border: none; /* Remove all borders */
+    border-bottom: 2px solid black; /* Add bottom border, adjust color & width as needed */
+}
+
+.navbar-brand {
+    font-family: 'Lobster', sans-serif;
+    font-size: 36px /* Назва шрифту, змініть на вибраний вами */
+}
+
+.navbar-nav {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 17px /* Назва шрифту, змініть на вибраний вами */
+}
+
+.btn-primary {
+    background: #0095F6;
+    border-color: #0095F6;
+}
+
+.btn-primary:hover {
+    background: #1877F2;
+    border-color: #1877F2;
+}
+
+.btn-logout {
+    font-size: 24px;
+}
+
+.image-container {
+    width: 550px;
+    height: 550px;
+    background-color: grey; /* Сірий фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Обрізаємо зайве */
+}
+
+.image-container img {
+    max-width: 550px;
+    max-height: 550px;
+    object-fit: scale-down; /* Масштабує зображення без обрізання */
+}
+
+.carousel-photo {
+    height: calc(100vh - 250px); /* Максимальна висота зображення */
+    object-fit: contain; /* Зберігає пропорції */
+    width: auto; /* Автоматична ширина для збереження пропорцій */
+    margin-left: auto; /* Автоматичний відступ зліва */
+    margin-right: auto; /* Автоматичний відступ справа */
+    display: block; /* Встановлює зображення як блоковий елемент */
+}
+
+.carousel-indicators [data-bs-target] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%; /* Додає круглу форму */
+    background-color: #fff; /* Білий колір фону для індикаторів */
+}

@@ -1,0 +1,18 @@
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+<div class="container my-4">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">{{ title }} Post</h2>
+            <form method="post" enctype="multipart/form-data" class="row g-3">
+                {% csrf_token %}
+                {{ form|crispy }}
+                {{ photo_form|crispy }}
+                {{ hashtag_form|crispy }}
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">{{ submit_button }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

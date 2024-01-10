@@ -1,0 +1,77 @@
+<h6>{{ post.caption }}</h6>
+{% if post.photos.all.count > 1 %}
+    <div id="PostCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for photo in post.photos.all %}
+                <button type="button" data-bs-target="#PostCarousel"
+                        data-bs-slide-to="{{ forloop.counter0 }}"
+                        {% if forloop.first %}class="active"
+                        aria-current="true"{% endif %}
+                        aria-label="Slide {{ forloop.counter }}"></button>
+            {% endfor %}
+        </div>
+        <div class="carousel-inner">
+            {% for photo in post.photos.all %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="
+
+
+
+
+
+
+
+
+
+                            {% if photo.picture %}{{ photo.picture.url }}{% endif %}"
+                         alt=""
+                         class="img-fluid"
+                         style="width: 550px; height: 550px; object-fit: cover;">
+                </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button"
+                data-bs-target="#PostCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"
+                      aria-hidden="true"></span>
+            <span class="visually-hidden">Prev</span>
+        </button>
+        <button class="carousel-control-next" type="button"
+                data-bs-target="#PostCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"
+                      aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+{% else %}
+    {% for photo in post.photos.all %}
+        <img src="{% if photo.picture %}{{ photo.picture.url }}{% endif %}"
+             alt=""
+             class="img-fluid"
+             style="width: 550px; height: 550px; object-fit: cover;">
+    {% endfor %}
+{% endif %}
+
+<p>{{ post.content }}</p>
+{% for hashtag in post.hashtags.all %}
+    <a href="{% url 'posts:post_list' %}?hashtag={{ hashtag.name }}"><span
+            class="hashtag">#{{ hashtag.name }}</span></a>
+{% endfor %}
+<p class="like-count"
+   data-post-id="{{ post.pk }}">{{ post.likes_count }} likes</p>
+
+<div class="d-flex mb-3">
+    <button type="button" data-id="{{ post.pk }}"
+            class="like-btn btn btn-lg custom-btn me-2">
+        <i class="fa-regular fa-heart"></i>
+    </button>
+    <a href="{% url 'posts:post_detail' post.pk %}"
+       class="btn btn-lg custom-btn me-2"><i
+            class="fa-solid fa-magnifying-glass"></i></a>
+    {% if post.user == request.user %}
+        <a href="{% url 'posts:edit_post' post.pk %}"
+           class="btn btn-lg custom-btn me-2">
+            <i class="fa-solid fa-gear"></i>
+        </a>
+    {% endif %}
+</div>

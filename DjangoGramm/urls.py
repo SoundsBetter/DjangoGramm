@@ -14,9 +14,26 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+from . import views
+from DjangoGramm.settings import (
+    MEDIA_URL,
+    MEDIA_ROOT,
+    DEBUG,
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("posts/", include("posts.urls")),
+    path("accounts/", include("accounts.urls")),
+    path("auths/", include("auths.urls")),
+    path("", views.home, name="home"),
+    path("admin/", admin.site.urls),
 ]
+
+if DEBUG:
+    urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
+
+handler404 = "DjangoGramm.views.handler404"
