@@ -2,6 +2,9 @@ from functools import partial
 
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from social_django.models import UserSocialAuth
 
 from DjangoGramm.settings import AVATARS
 from DjangoGramm.utils import directory_path
@@ -48,3 +51,9 @@ class Follower(models.Model):
             fields=["follower", "following"], name="user_follow"
         )
     ]
+
+
+@receiver(post_save, sender=UserSocialAuth)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance.user)

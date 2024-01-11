@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "social_django",
     "posts.apps.PostsConfig",
     "accounts.apps.AccountsConfig",
     "auths.apps.AuthsConfig",
@@ -44,6 +45,24 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
 ]
+
+AUTHENTICATION_BACKENDS = ("social_core.backends.google.GoogleOAuth2",)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
+    "28008127256-sj433r1fp1hje6fsjs7cdoumk7rip76n.apps.googleusercontent.com"
+)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
+
+LOGIN_URL = "auths/login/"
+LOGOUT_URL = "auths/logout/"
+LOGIN_REDIRECT_URL = "/"
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = (
+    "http://127.0.0.1:8000/social-auth/complete/google-oauth2/"
+)
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -144,7 +163,7 @@ EMAIL_HOST_USER = "emcev.sound@gmail.com"
 EMAIL_HOST_PASSWORD = "uvmw undq vctx ldac"
 EMAIL_USE_TLS = True
 
-LOGIN_URL = "/auths/login/"
+# LOGIN_URL = "/auths/login/"
 
 LOGGING = {
     "version": 1,

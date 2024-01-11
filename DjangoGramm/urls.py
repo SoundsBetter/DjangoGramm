@@ -31,6 +31,7 @@ urlpatterns = [
     path("auths/", include("auths.urls")),
     path("", views.home, name="home"),
     path("admin/", admin.site.urls),
+    path("social-auth/", include("social_django.urls", namespace="social")),
 ]
 
 if DEBUG:
