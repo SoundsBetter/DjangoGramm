@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from pathlib import Path
+import allauth
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +33,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "social_django",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
     "posts.apps.PostsConfig",
     "accounts.apps.AccountsConfig",
     "auths.apps.AuthsConfig",
@@ -46,23 +51,52 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
 ]
 
-AUTHENTICATION_BACKENDS = ("social_core.backends.google.GoogleOAuth2",)
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
-    "28008127256-sj433r1fp1hje6fsjs7cdoumk7rip76n.apps.googleusercontent.com"
-)
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
+ACCOUNT_ADAPTER = "auths.adapters.MyAccountAdapter"
 
-LOGIN_URL = "auths/login/"
-LOGOUT_URL = "auths/logout/"
+LOGIN_URL = "/auths/login/"
+LOGOUT_URL = "/auths/logout/"
 LOGIN_REDIRECT_URL = "/"
+# ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/"
+# ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/auths/login/"
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = (
-    "http://127.0.0.1:8000/social-auth/complete/google-oauth2/"
-)
+ACCOUNT_UNIQUE_EMAIL = True
 
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "VERIFIED_EMAIL": True,
+        "SCOPE": [
+            "user",
+            "email",
+        ],
+    },
+    "google": {
+        "APPS": [
+            {
+                "client_id": "28008127256-sj433r1fp1hje6fsjs7cdoumk7rip76n.apps.googleusercontent.com",
+                "secret": "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",
+                "key": "",
+            },
+        ],
+        "VERIFIED_EMAIL": True,
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+    },
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -72,6 +106,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "DjangoGramm.urls"

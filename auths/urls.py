@@ -1,15 +1,20 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
 app_name = "auths"
 urlpatterns = [
-    path(
-        "activate/<uidb64>/<token>/",
-        views.ActivateView.as_view(),
-        name="activate",
+    path("login/", views.AuthsLoginView.as_view(), name="login"),
+    path("logout/", views.AuthsLogoutView.as_view(), name="logout"),
+    path("signup/", views.AuthsSignupView.as_view(), name="signup"),
+    re_path(
+        r"^confirm-email/(?P<key>[-:\w]+)/$",
+        views.AuthsConfirmEmailView.as_view(),
+        name="account_confirm_email",
     ),
-    path("login/", views.LoginView.as_view(), name="login"),
-    path("logout/", views.LogoutView.as_view(), name="logout"),
-    path("register/", views.RegisterView.as_view(), name="register"),
+    path(
+        "confirm-email/",
+        views.EmailVerificationSentView.as_view(),
+        name="account_email_verification_sent",
+    ),
 ]

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load allauth i18n %}
+
+{% block content %}
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="card w-25 text-center p-3">
+            <h2 class="card-title mx-auto">Log Out</h2>
+            <div class="card-body">
+                <p>Do you wanna to leave us</p>
+                <form class="" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">Yep, I`m done
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
