@@ -68,8 +68,8 @@ ACCOUNT_UNIQUE_EMAIL = True
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-SOCIALACCOUNT_EMAIL_REQUIRED = True
-SOCIALACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# SOCIALACCOUNT_EMAIL_REQUIRED = True
+# SOCIALACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 SOCIALACCOUNT_PROVIDERS = {
     "github": {
@@ -80,13 +80,6 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
     },
     "google": {
-        "APPS": [
-            {
-                "client_id": "28008127256-sj433r1fp1hje6fsjs7cdoumk7rip76n.apps.googleusercontent.com",
-                "secret": "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",
-                "key": "",
-            },
-        ],
         "VERIFIED_EMAIL": True,
         "SCOPE": [
             "profile",
