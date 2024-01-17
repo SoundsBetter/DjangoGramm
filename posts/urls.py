@@ -30,7 +30,7 @@ urlpatterns = [
         name="post_list",
     ),
     path(
-        "/following/",
+        "following/",
         views.PostsFollowingListView.as_view(),
         name="post_following_list",
     ),
