@@ -1,6 +1,4 @@
 from functools import partial
-
-
 from django.db import models
 
 from DjangoGramm.settings import AVATARS

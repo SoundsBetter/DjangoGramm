@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from pathlib import Path
-import allauth
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +24,7 @@ SECRET_KEY = (
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -61,9 +60,6 @@ ACCOUNT_ADAPTER = "auths.adapters.MyAccountAdapter"
 LOGIN_URL = "/auths/login/"
 LOGOUT_URL = "/auths/logout/"
 LOGIN_REDIRECT_URL = "/"
-# ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/"
-# ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/auths/login/"
-
 ACCOUNT_UNIQUE_EMAIL = True
 
 ACCOUNT_EMAIL_REQUIRED = True
@@ -80,13 +76,6 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
     },
     "google": {
-        "APPS": [
-            {
-                "client_id": "28008127256-sj433r1fp1hje6fsjs7cdoumk7rip76n.apps.googleusercontent.com",
-                "secret": "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",
-                "key": "",
-            },
-        ],
         "VERIFIED_EMAIL": True,
         "SCOPE": [
             "profile",
@@ -177,10 +166,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "/static/"
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATIC_ROOT = BASE_DIR / "static"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -197,8 +183,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "emcev.sound@gmail.com"
 EMAIL_HOST_PASSWORD = "uvmw undq vctx ldac"
 EMAIL_USE_TLS = True
-
-# LOGIN_URL = "/auths/login/"
 
 LOGGING = {
     "version": 1,
