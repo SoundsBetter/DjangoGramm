@@ -13,19 +13,23 @@
                         class="rounded-circle p-3"
                         style="width: 100px; height: 100px;">
                 <h4 class="text-center">{{ profile_user }}</h4>
-            {% if profile_user.pk != user.pk %}
-                <button type="button" data-id="{{ profile_user.pk }}"
-                        class="follow-btn ms-3"><i
-                        class="fa-regular fa-circle-check"></i>
-                </button>
-            {% endif %}
+                {% if profile_user.pk != user.pk %}
+                    <button type="button" data-id="{{ profile_user.pk }}"
+                            class="follow-btn ms-3"><i
+                            class="fa-regular fa-circle-check"></i>
+                    </button>
+                {% endif %}
             </div>
-            {% for post in posts %}
-                <div class="col-sm-12 col-md-6 col-lg-4"
-                     style="max-width: 575px">
-                    {% include 'posts/includes/single_post.html' %}
-                </div>
-            {% endfor %}
+            {% if posts|length > 0 %}
+                {% for post in posts %}
+                    <div class="col-sm-12 col-md-6 col-lg-4"
+                         style="max-width: 575px">
+                        {% include 'posts/includes/single_post.html' %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h1>{{ profile_user }}</h1>
+            {% endif %}
         </div>
     </div>
 

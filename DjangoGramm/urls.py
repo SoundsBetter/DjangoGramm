@@ -17,9 +17,7 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView
 
-import auths.views
 from . import views
 from DjangoGramm.settings import (
     MEDIA_URL,
