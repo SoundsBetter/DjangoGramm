@@ -17,6 +17,7 @@
                     <img src="
 
 
+
                             {% if photo.picture %}{{ photo.picture.url }}{% endif %}"
                          alt=""
                          class="img-fluid"
@@ -74,14 +75,19 @@
       action="{% url 'posts:add_comment' post.pk %}">
     {% csrf_token %}
     <div>{{ comment_form|crispy }}</div>
-    <button type="button" class="submit-comment btn btn-primary small mb-3">Add Comment</button>
+    <button type="button" class="submit-comment btn btn-primary small mb-3">Add
+        Comment
+    </button>
 </form>
 
 <div class="comments-container">
     {% for comment in post.comments.all %}
         <div>
-            <strong>{{ comment.user.username }}:</strong>
-            <p>{{ comment.content }}</p>
+            <div class="w-25"><img class="rounded-circle w-25"
+                                   src="{{ comment.user.userprofile.avatar.url }}"
+                                   alt="">
+                <strong>{{ comment.user.username }}:</strong></div>
+            <p class="mb-3 ms-3 mt-2">{{ comment.content }}</p>
         </div>
     {% endfor %}
 </div>
