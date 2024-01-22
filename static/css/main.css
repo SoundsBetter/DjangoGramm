@@ -125,6 +125,14 @@
     }
 }
 
-.comment-avatar {
+.post-container {
+    width: 575px; /* Фіксована ширина для великих екранів */
+    margin: 0 auto; /* Центрування контейнера */
+}
 
+@media (max-width: 570px) {
+    .post-container {
+        width: 100%; /* Повна ширина для мобільних екранів */
+        padding-left: 6px;
+    }
 }
