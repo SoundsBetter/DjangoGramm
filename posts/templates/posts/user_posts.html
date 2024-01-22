@@ -20,6 +20,17 @@
                     </button>
                 {% endif %}
             </div>
+            {% if profile_user.userprofile.bio %}
+                <div class="d-flex align-items-center justify-content-center">
+                    <div id="short_bio"><b>About me: </b>{{ profile_user.userprofile.bio|slice:":100" }}...</div>
+                    <div id="full_bio"
+                         style="display:none;">{{ profile_user.userprofile.bio }}</div>
+                        <button type="button" class="btn"
+                                onclick="toggleBio()"><i id="toggleIcon"
+                                                         class="fa-solid fa-caret-down"></i>
+                        </button>
+                </div>
+            {% endif %}
             {% if posts|length > 0 %}
                 {% for post in posts %}
                     <div class="col-sm-12 col-md-6 col-lg-4"
@@ -28,7 +39,9 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <h1>{{ profile_user }}</h1>
+                <h5 class="text-center mt-5">no posts yet <i
+                        class="fa-regular fa-face-frown-open ms-2"
+                        style="font-size: x-large"></i></h5>
             {% endif %}
         </div>
     </div>

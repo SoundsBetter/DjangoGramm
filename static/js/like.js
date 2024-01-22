@@ -35,12 +35,12 @@ document.querySelectorAll('.like-btn').forEach(function (button) {
 function toggleHeartIcon(button, isLiked) {
     const icon = button.querySelector('i');
     if (isLiked) {
-        icon.classList.remove('fa-regular', 'fa-heart');
-        icon.classList.add('fa-solid', 'fa-heart'); // Заповнене серце
+        icon.classList.remove('fa-regular');
+        icon.classList.add('fa-solid'); // Заповнене серце
         button.style.color = '#ff3040'; // Додатково змінюємо колір
     } else {
-        icon.classList.remove('fa-solid', 'fa-heart');
-        icon.classList.add('fa-regular', 'fa-heart'); // Порожнє серце
+        icon.classList.remove('fa-solid');
+        icon.classList.add('fa-regular'); // Порожнє серце
         button.style.color = ''; // Скидуємо колір
     }
 }
@@ -68,4 +68,22 @@ function encodeForAjax(data) {
     return Object.keys(data).map(function (k) {
         return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
     }).join('&');
+}
+
+function toggleBio() {
+    var shortBio = document.getElementById('short_bio');
+    var fullBio = document.getElementById('full_bio');
+    var toggleIcon = document.getElementById('toggleIcon');
+
+    if (fullBio.style.display === "none") {
+        fullBio.style.display = "block";
+        shortBio.style.display = "none";
+        toggleIcon.classList.remove('fa-caret-down');
+        toggleIcon.classList.add('fa-caret-up');
+    } else {
+        fullBio.style.display = "none";
+        shortBio.style.display = "block";
+        toggleIcon.classList.remove('fa-caret-up');
+        toggleIcon.classList.add('fa-caret-down');
+    }
 }

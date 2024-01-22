@@ -13,9 +13,10 @@ class UserProfileForm(forms.ModelForm):
     )
 
     date_of_birth = forms.DateField(
-        widget=forms.DateInput(attrs={"type": "date"})
+        widget=forms.DateInput(attrs={"type": "date"}),
+        required=False,
     )
 
     class Meta:
         model = UserProfile
-        fields = ("avatar", "phone_number", "date_of_birth")
+        fields = ("avatar", "phone_number", "date_of_birth", "bio")
