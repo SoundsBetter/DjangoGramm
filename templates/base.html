@@ -26,13 +26,16 @@
 
     {% if request.user.is_authenticated %}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown" aria-expanded="false"
-            aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+                data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav mx-auto">
+                <li><a class="nav-link me-3" href="{% url 'accounts:profile' user_id=user.id %}"><i
+                        class="fa-regular fa-user"></i> Profile</a>
+                </li>
                 <li><a class="nav-link me-3"
                        href="{% url 'posts:create_post' user.id %}"><i
                         class="fa-regular fa-square-plus"></i> Create
