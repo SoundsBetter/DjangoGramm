@@ -21,14 +21,17 @@
                 {% endif %}
             </div>
             {% if profile_user.userprofile.bio %}
-                <div class="d-flex align-items-center justify-content-center">
-                    <div id="short_bio"><b>About me: </b>{{ profile_user.userprofile.bio|slice:":100" }}...</div>
+                <div class="d-flex align-items-center justify-content-center mb-5">
+                    <div id="short_bio"><b>About
+                        me: </b>{{ profile_user.userprofile.bio|slice:":100"|linebreaksbr}}...
+                    </div>
                     <div id="full_bio"
-                         style="display:none;">{{ profile_user.userprofile.bio }}</div>
-                        <button type="button" class="btn"
-                                onclick="toggleBio()"><i id="toggleIcon"
-                                                         class="fa-solid fa-caret-down"></i>
-                        </button>
+                         style="display:none;"><b>About
+                        me: </b>{{ profile_user.userprofile.bio|linebreaksbr }}</div>
+                    <button type="button" class="btn"
+                            onclick="toggleBio()"><i id="toggleIcon"
+                                                     class="fa-solid fa-caret-down"></i>
+                    </button>
                 </div>
             {% endif %}
             {% if posts|length > 0 %}
