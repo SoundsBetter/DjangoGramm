@@ -14,7 +14,13 @@ from django.views.generic import (
 )
 
 from auths.models import User
-from posts.forms import PostForm, PhotoForm, PhotoFormEdit, HashtagForm
+from posts.forms import (
+    PostForm,
+    PhotoForm,
+    PhotoFormEdit,
+    HashtagForm,
+    CommentForm,
+)
 from posts.models import Post, Photo, Like
 from DjangoGramm.text_messages import (
     POST_CREATED_SUCCESS_MSG,
@@ -144,6 +150,7 @@ class PostsListView(LoginRequiredMixin, ListView):
             user = get_object_or_404(User, pk=user_id)
             context["profile_user"] = user
         context["feed_name"] = "All posts"
+        context["comment_form"] = CommentForm()
         return context
 
     def get_template_names(self):
@@ -184,6 +191,26 @@ class PostsListView(LoginRequiredMixin, ListView):
                 .order_by("-created_at")
             )
         return queryset
+
+
+class AddCommentView(LoginRequiredMixin, View):
+    def post(self, request, post_id):
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.user = request.user
+            comment.post = get_object_or_404(Post, pk=post_id)
+            comment.save()
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "message": "Comment added",
+                    "username": request.user.username,
+                    "comment": comment.content,
+                }
+            )
+        else:
+            return JsonResponse({"status": "error", "message": "Invalid form"})
 
 
 class PostsFollowingListView(LoginRequiredMixin, ListView):

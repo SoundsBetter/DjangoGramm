@@ -1,3 +1,4 @@
+{% load crispy_forms_filters %}
 <h6>{{ post.caption }}</h6>
 {% if post.photos.all.count > 1 %}
     <div id="PostCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -14,13 +15,6 @@
             {% for photo in post.photos.all %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                     <img src="
-
-
-
-
-
-
-
 
 
                             {% if photo.picture %}{{ photo.picture.url }}{% endif %}"
@@ -74,4 +68,20 @@
             <i class="fa-solid fa-gear"></i>
         </a>
     {% endif %}
+</div>
+
+<form class="comment-form" data-post-id="{{ post.id }}" method="post"
+      action="{% url 'posts:add_comment' post.pk %}">
+    {% csrf_token %}
+    <div>{{ comment_form|crispy }}</div>
+    <button type="button" class="submit-comment btn btn-primary small mb-3">Add Comment</button>
+</form>
+
+<div class="comments-container">
+    {% for comment in post.comments.all %}
+        <div>
+            <strong>{{ comment.user.username }}:</strong>
+            <p>{{ comment.content }}</p>
+        </div>
+    {% endfor %}
 </div>
