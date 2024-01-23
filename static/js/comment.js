@@ -1,43 +1,42 @@
-document.querySelectorAll('.submit-comment').forEach(function (button) {
-    button.addEventListener('click', function () {
-        var form = this.closest('form');
-        var postId = form.getAttribute('data-post-id');
-        var formData = new FormData(form);
+function handleSubmit(event) {
+    event.preventDefault(); // Запобігаємо стандартному відправленню форми
 
-        var actionUrl = `/posts/add_comment/${postId}/`;
+    var form = event.target.closest('form');
+    var postId = form.getAttribute('data-post-id');
+    var formData = new FormData(form);
 
-        fetch(actionUrl, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Очищення форми
-                form.reset();
+    var actionUrl = `/posts/add_comment/${postId}/`;
 
-                // Перевірка, чи коментар був доданий успішно
-                if (data.status === 'success') {
-                    // Створення елементу для нового коментаря
-                    var newComment = document.createElement('div');
-                    newComment.innerHTML = `
-                    <strong>${data.username}:</strong>
-                    <p>${data.comment}</p>
-                `;
-
-                    // Додавання нового коментаря на сторінку
-                    var commentsContainer = form.nextElementSibling; // або інший спосіб знайти контейнер
-                    commentsContainer.appendChild(newComment);
-                } else {
-                    // Обробка помилки
-                    console.error('Error:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+    fetch(actionUrl, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            var newComment = document.createElement('div');
+            newComment.innerHTML = `<strong>${data.username}:</strong><p>${data.comment}</p>`;
+            var commentsContainer = form.nextElementSibling;
+            commentsContainer.appendChild(newComment);
+            form.reset(); // Очищуємо форму після додавання коментаря
+        } else {
+            // Обробка помилки
+            console.error('Error:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
+}
+
+// Встановлення обробників подій для форм і кнопок
+document.querySelectorAll('.comment-form').forEach(function (form) {
+    form.addEventListener('submit', handleSubmit);
 });
 
+document.querySelectorAll('.submit-comment').forEach(function (button) {
+    button.addEventListener('click', handleSubmit);
+});
