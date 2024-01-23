@@ -18,6 +18,8 @@
 
 
 
+
+
                             {% if photo.picture %}{{ photo.picture.url }}{% endif %}"
                          alt=""
                          class="img-fluid"
@@ -84,7 +86,10 @@
     {% for comment in post.comments.all %}
         <div>
             <div class="w-25"><img class="rounded-circle w-25"
-                                   src="{{ comment.user.userprofile.avatar.url }}"
+                                   src="{% if comment.user.userprofile.avatar %}
+                        {{ comment.user.userprofile.avatar.url }}
+                        {% else %}{% static 'images/no_avatar.jpg' %}
+                        {% endif %}"
                                    alt="">
                 <strong>{{ comment.user.username }}:</strong></div>
             <p class="mb-3 ms-3 mt-2">{{ comment.content }}</p>
