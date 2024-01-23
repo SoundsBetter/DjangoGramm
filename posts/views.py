@@ -173,7 +173,7 @@ class PostsListView(LoginRequiredMixin, ListView):
             queryset = (
                 queryset.filter(hashtags__name=hashtag)
                 .select_related("user__userprofile")
-                .prefetch_related("photos", "hashtags")
+                .prefetch_related("photos", "hashtags", "comments")
                 .annotate(likes_count=Count("likes"))
                 .order_by("-created_at")
             )
@@ -186,7 +186,7 @@ class PostsListView(LoginRequiredMixin, ListView):
             queryset = (
                 queryset.filter(user__id=user_id)
                 .select_related("user__userprofile")
-                .prefetch_related("photos", "hashtags")
+                .prefetch_related("photos", "hashtags", "comments")
                 .annotate(likes_count=Count("likes"))
                 .order_by("-created_at")
             )
