@@ -188,6 +188,46 @@ class PostsListView(LoginRequiredMixin, ListView):
         return queryset
 
 
+class PostsFollowingListView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = "posts/feed.html"
+    context_object_name = "posts"
+
+    def _get_followed_users(self):
+        return User.objects.filter(followers__follower=self.request.user)
+
+    def get_queryset(self):
+        followed_users = self._get_followed_users()
+        queryset = super().get_queryset()
+        queryset = (
+            queryset.filter(user__in=followed_users)
+            .select_related("user__userprofile")
+            .prefetch_related("photos", "hashtags", "likes")
+            .prefetch_related(
+                Prefetch(
+                    "comments",
+                    queryset=Comment.objects.select_related(
+                        "user__userprofile"
+                    ),
+                )
+            )
+            .annotate(
+                user_like_it=Exists(
+                    Like.objects.filter(
+                        user=self.request.user, post=OuterRef("pk")
+                    )
+                )
+            )
+            .order_by("-created_at")
+        )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["feed_name"] = "Following"
+        return context
+
+
 class AddCommentView(LoginRequiredMixin, View):
     def post(self, request, post_id):
         comment_form = CommentForm(request.POST)
@@ -206,32 +246,6 @@ class AddCommentView(LoginRequiredMixin, View):
             )
         else:
             return JsonResponse({"status": "error", "message": "Invalid form"})
-
-
-class PostsFollowingListView(LoginRequiredMixin, ListView):
-    model = Post
-    template_name = "posts/feed.html"
-    context_object_name = "posts"
-
-    def _get_followed_users(self):
-        return User.objects.filter(followers__follower=self.request.user)
-
-    def get_queryset(self):
-        followed_users = self._get_followed_users()
-        queryset = super().get_queryset()
-        queryset = (
-            queryset.filter(user__in=followed_users)
-            .select_related("user__userprofile")
-            .prefetch_related("photos", "hashtags")
-            .annotate(likes_count=Count("likes"))
-            .order_by("-created_at")
-        )
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["feed_name"] = "Following"
-        return context
 
 
 class DeletePost(UserIsOwnerMixin, LoginRequiredMixin, DeleteView):
