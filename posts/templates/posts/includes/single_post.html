@@ -17,6 +17,11 @@
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                     <img src="
 
+
+
+
+
+
                             {% if photo.picture %}{{ photo.picture.url }}{% endif %}"
                          alt=""
                          class="img-fluid"
@@ -84,14 +89,25 @@
 
 <div class="comments-container">
     {% for comment in post.comments.all %}
-        <div>
-            <div class="w-25"><img class="rounded-circle w-25"
-                                   src="
+        <div class="row align-items-center">
+            <div class="col-1 mb-auto"><a
+                    href="{% url 'posts:post_list' %}?user={{ comment.user.id }}"><img
+                    class="rounded-circle"
+                    style="width: 30px; height: auto;"
+                    src="
 
-                                           {% if comment.user.userprofile.avatar %}{{ comment.user.userprofile.avatar.url }}{% else %}{% static 'images/no_avatar.jpg' %}{% endif %}"
-                                   alt="">
-                <strong>{{ comment.user.username }}:</strong></div>
-            <p class="mb-3 ms-3 mt-2">{{ comment.content }}</p>
+
+
+                            {% if comment.user.userprofile.avatar %}{{ comment.user.userprofile.avatar.url }}{% else %}{% static 'images/no_avatar.jpg' %}{% endif %}"
+                    alt=""></a></div>
+            <div class="col-sm-11">
+                <p style="font-size: small">
+                    <b>{{ comment.user.username }}: </b>{{ comment.content }}
+                </p>
+                <p style="font-size: x-small; color: grey">
+                    {{ comment.created_at }}
+                </p>
+            </div>
         </div>
     {% endfor %}
 </div>
