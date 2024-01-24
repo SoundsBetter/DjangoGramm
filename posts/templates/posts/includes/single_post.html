@@ -17,16 +17,6 @@
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                     <img src="
 
-
-
-
-
-
-
-
-
-
-
                             {% if photo.picture %}{{ photo.picture.url }}{% endif %}"
                          alt=""
                          class="img-fluid"
@@ -62,12 +52,15 @@
             class="hashtag">#{{ hashtag.name }}</span></a>
 {% endfor %}
 <p class="like-count"
-   data-post-id="{{ post.pk }}">{{ post.likes_count }} likes</p>
+   data-post-id="{{ post.pk }}">{{ post.likes.count }} likes</p>
 
 <div class="d-flex mb-3">
     <button type="button" data-id="{{ post.pk }}"
             class="like-btn btn btn-lg custom-btn me-2">
-        <i class="fa-regular fa-heart"></i>
+        {% if post.user_like_it %}
+            <i class="fa-solid fa-heart"
+               style="color: #ff3040"></i>{% else %}
+            <i class="fa-regular fa-heart"></i>{% endif %}
     </button>
     <a href="{% url 'posts:post_detail' post.pk %}"
        class="btn btn-lg custom-btn me-2"><i
@@ -93,7 +86,9 @@
     {% for comment in post.comments.all %}
         <div>
             <div class="w-25"><img class="rounded-circle w-25"
-                                   src="{% if comment.user.userprofile.avatar %}{{ comment.user.userprofile.avatar.url }}{% else %}{% static 'images/no_avatar.jpg' %}{% endif %}"
+                                   src="
+
+                                           {% if comment.user.userprofile.avatar %}{{ comment.user.userprofile.avatar.url }}{% else %}{% static 'images/no_avatar.jpg' %}{% endif %}"
                                    alt="">
                 <strong>{{ comment.user.username }}:</strong></div>
             <p class="mb-3 ms-3 mt-2">{{ comment.content }}</p>

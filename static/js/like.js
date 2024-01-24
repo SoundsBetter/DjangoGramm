@@ -1,14 +1,5 @@
 document.querySelectorAll('.like-btn').forEach(function (button) {
     const postId = button.getAttribute('data-id');
-
-    fetch(`/posts/check_like/${postId}/`)
-        .then(response => response.json())
-        .then(data => {
-            const isLiked = data.liked;
-            toggleHeartIcon(button, isLiked);
-        })
-        .catch(error => console.error(error));
-
     button.addEventListener('click', function () {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', `/posts/like/${postId}/`, true);

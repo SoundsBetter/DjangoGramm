@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Exists
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse_lazy
@@ -164,32 +164,21 @@ class PostsListView(LoginRequiredMixin, ListView):
         queryset = super().get_queryset()
         queryset = (
             queryset.select_related("user__userprofile")
-            .prefetch_related("photos", "hashtags")
-            .annotate(likes_count=Count("likes"))
+            .prefetch_related("photos", "hashtags", "comments", "likes")
             .order_by("-created_at")
         )
+        likes = Like.objects.filter(user=self.request.user, post=OuterRef("pk"))
+        queryset = queryset.annotate(user_like_it=Exists(likes))
         hashtag, user_id = self._get_query_params()
         if hashtag:
-            queryset = (
-                queryset.filter(hashtags__name=hashtag)
-                .select_related("user__userprofile")
-                .prefetch_related("photos", "hashtags", "comments")
-                .annotate(likes_count=Count("likes"))
-                .order_by("-created_at")
-            )
+            queryset = queryset.filter(hashtags__name=hashtag)
         elif user_id:
             try:
                 user_id = int(user_id)
             except ValueError as ex:
                 messages.error(BAD_REQUEST, ex)
                 return redirect("home")
-            queryset = (
-                queryset.filter(user__id=user_id)
-                .select_related("user__userprofile")
-                .prefetch_related("photos", "hashtags", "comments")
-                .annotate(likes_count=Count("likes"))
-                .order_by("-created_at")
-            )
+            queryset = queryset.filter(user__id=user_id)
         return queryset
 
 
