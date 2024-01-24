@@ -70,7 +70,7 @@ SOCIALACCOUNT_PROVIDERS = {
     "github": {
         "VERIFIED_EMAIL": True,
         "SCOPE": [
-            "user",
+            "read:user",
             "email",
         ],
     },
