@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, OuterRef, Exists
+from django.db.models import Count, OuterRef, Exists, Prefetch
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse_lazy
@@ -21,7 +21,7 @@ from posts.forms import (
     HashtagForm,
     CommentForm,
 )
-from posts.models import Post, Photo, Like
+from posts.models import Post, Photo, Like, Comment
 from DjangoGramm.text_messages import (
     POST_CREATED_SUCCESS_MSG,
     POST_CREATED_DENIED_MSG,
@@ -163,12 +163,18 @@ class PostsListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = (
-            queryset.select_related("user__userprofile")
-            .prefetch_related("photos", "hashtags", "comments", "likes")
+            queryset.select_related("user", "user__userprofile")
+            .prefetch_related("photos", "hashtags", "likes")
             .order_by("-created_at")
         )
         likes = Like.objects.filter(user=self.request.user, post=OuterRef("pk"))
-        queryset = queryset.annotate(user_like_it=Exists(likes))
+        comment_prefetch = Prefetch(
+            "comments",
+            queryset=Comment.objects.select_related("user__userprofile"),
+        )
+        queryset = queryset.prefetch_related(comment_prefetch).annotate(
+            user_like_it=Exists(likes)
+        )
         hashtag, user_id = self._get_query_params()
         if hashtag:
             queryset = queryset.filter(hashtags__name=hashtag)
