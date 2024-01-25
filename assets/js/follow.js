@@ -43,3 +43,4 @@ function toggleFollowIcon(button, isFollowed) {
         button.style.color = ''; // Скидуємо колір
     }
 }
+
