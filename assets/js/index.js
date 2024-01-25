@@ -1,6 +1,7 @@
 import './like';
 import './follow';
 import './comment';
+import '../css/main.css';
 
 function getCookie(name) {
     let cookieValue = null;
