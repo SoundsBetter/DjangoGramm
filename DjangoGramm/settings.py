@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +34,7 @@ ALLOWED_HOSTS = ["34.165.36.170", "127.0.0.1", "localhost", "192.168.100.2"]
 # Application definition
 
 INSTALLED_APPS = [
+    "cloudinary",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -67,13 +71,6 @@ SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 SOCIALACCOUNT_PROVIDERS = {
-    "github": {
-        "VERIFIED_EMAIL": True,
-        "SCOPE": [
-            "read:user",
-            "email",
-        ],
-    },
     "google": {
         "VERIFIED_EMAIL": True,
         "SCOPE": [
@@ -167,9 +164,6 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -199,8 +193,8 @@ LOGGING = {
     },
 }
 
+
 AVATARS = "avatars"
-ACTIVATE_URL = "http://127.0.0.1:8000/auths/activate"
 PICTURES = "pictures"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

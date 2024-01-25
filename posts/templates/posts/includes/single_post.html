@@ -1,5 +1,7 @@
 {% load static %}
 {% load crispy_forms_filters %}
+{% load cloudinary %}
+
 <h6>{{ post.caption }}</h6>
 {% if post.photos.all.count > 1 %}
     <div id="PostCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -15,13 +17,9 @@
         <div class="carousel-inner">
             {% for photo in post.photos.all %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img src="
-                            {% if photo.picture %}
-                                {{ photo.picture.url }}
-                            {% endif %}"
-                         alt=""
+                    <img src="{{ photo.picture.url }}" alt=""
                          class="img-fluid"
-                         style="max-width: 100%; height: 550px; object-fit: cover;">
+                         style="max-width: 100%; width: 550px; height: 550px; object-fit: cover;">
                 </div>
             {% endfor %}
         </div>
@@ -40,10 +38,9 @@
     </div>
 {% else %}
     {% for photo in post.photos.all %}
-        <img src="{% if photo.picture %}{{ photo.picture.url }}{% endif %}"
-             alt=""
+        <img src="{{ photo.picture.url }}" alt=""
              class="img-fluid"
-             style="width: 550px; height: 550px; object-fit: cover;">
+             style="max-width: 100%; width: 550px; height: 550px; object-fit: cover;">
     {% endfor %}
 {% endif %}
 
@@ -90,16 +87,7 @@
                     href="{% url 'posts:post_list' %}?user={{ comment.user.id }}"><img
                     class="rounded-circle"
                     style="width: 30px; height: auto;"
-                    src="
-
-
-
-
-
-
-
-
-                            {% if comment.user.userprofile.avatar %}{{ comment.user.userprofile.avatar.url }}{% else %}{% static 'images/no_avatar.jpg' %}{% endif %}"
+                    src="{% if comment.user.userprofile.avatar %}{{ comment.user.userprofile.avatar.url }}{% else %}{% static 'images/no_avatar.jpg' %}{% endif %}"
                     alt=""></a></div>
             <div class="col-sm-11">
                 <p style="font-size: small">
