@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
 
-ALLOWED_HOSTS = ["34.165.36.170", "127.0.0.1", "localhost", "192.168.100.2"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -124,8 +124,8 @@ DATABASES = {
         "NAME": os.getenv("DATABASE_NAME", ""),
         "USER": os.getenv("DATABASE_USER", ""),
         "PASSWORD": os.getenv("DATABASE_PASSWORD", ""),
-        "HOST": "localhost",
-        "PORT": "5432",
+        "HOST": os.getenv("DATABASE_HOST", "localhost"),
+        "PORT": os.getenv("DATABASE_PORT", "5432"),
     },
 }
 
