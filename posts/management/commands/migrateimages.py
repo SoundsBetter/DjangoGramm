@@ -8,9 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         for photo in Photo.objects.all():
-            print(str(photo.picture))
-            response = cloudinary.uploader.upload(str(photo.picture))
-            print(response)
+            response = cloudinary.uploader.upload(photo.picture.path)
             photo.picture = response["url"]
             photo.save()
 

@@ -26,10 +26,10 @@ class Photo(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name="photos"
     )
-    picture = models.ImageField(
-        upload_to=partial(directory_path, base_folder=PICTURES)
-    )
-    # picture = CloudinaryField("picture")
+    # picture = models.ImageField(
+    #     upload_to=partial(directory_path, base_folder=PICTURES)
+    # )
+    picture = CloudinaryField("picture")
 
     def delete(self, *args, **kwargs):
         file = self.picture
