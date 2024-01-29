@@ -16,7 +16,7 @@ services:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      - db_dump:/tmp/db_dump
+#      - db_dump:/tmp/db_dump
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
@@ -24,4 +24,4 @@ services:
 
 volumes:
   postgres_data:
-  db_dump:
+#  db_dump:
