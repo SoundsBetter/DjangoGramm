@@ -119,6 +119,10 @@ WSGI_APPLICATION = "DjangoGramm.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
+    # "default": {
+    #     "ENGINE": "django.db.backends.sqlite3",
+    #     "NAME": "db.sqlite3",
+    # },
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("DATABASE_NAME", ""),
