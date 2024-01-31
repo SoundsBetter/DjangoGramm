@@ -9,12 +9,15 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         for user in UserProfile.objects.all():
             if user.avatar:
-                response = cloudinary.uploader.upload(user.avatar.path)
-                user.avatar = response["url"]
-                user.save()
+                try:
+                    response = cloudinary.uploader.upload(user.avatar.path)
+                    user.avatar = response["url"]
+                    user.save()
 
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        f"Successfully migrated avatar {user.pk}"
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f"Successfully migrated avatar {user.pk}"
+                        )
                     )
-                )
+                except FileNotFoundError:
+                    pass
