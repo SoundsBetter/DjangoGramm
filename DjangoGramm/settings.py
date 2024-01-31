@@ -28,7 +28,11 @@ SECRET_KEY = os.getenv("SECRET_KEY", "")
 DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
-CSRF_TRUSTED_ORIGINS = ["http://localhost:1337", "http://127.0.0.1:1337"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:1337",
+    "http://127.0.0.1:1337",
+    "http://34.165.36.170:1337",
+]
 
 
 # Application definition
