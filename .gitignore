@@ -4,4 +4,6 @@ __pycache__/
 db.sqlite3
 /media
 /node_modules
-.env
+.env*
+db.json
+init_db.sql

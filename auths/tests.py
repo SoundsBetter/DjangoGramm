@@ -64,7 +64,6 @@ class AuthsViewsTests(TestCase):
             reverse("auths:register"), {"email": "test@example.com"}
         )
 
-        messages = list(get_messages(response.wsgi_request))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "User with this Email already exists.")
 
