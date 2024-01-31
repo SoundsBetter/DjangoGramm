@@ -170,7 +170,9 @@ class PostsListView(LoginRequiredMixin, ListView):
         likes = Like.objects.filter(user=self.request.user, post=OuterRef("pk"))
         comment_prefetch = Prefetch(
             "comments",
-            queryset=Comment.objects.select_related("user__userprofile"),
+            queryset=Comment.objects.select_related(
+                "user__userprofile"
+            ).order_by("created_at"),
         )
         queryset = queryset.prefetch_related(comment_prefetch).annotate(
             user_like_it=Exists(likes)
@@ -208,7 +210,7 @@ class PostsFollowingListView(LoginRequiredMixin, ListView):
                     "comments",
                     queryset=Comment.objects.select_related(
                         "user__userprofile"
-                    ),
+                    ).order_by("created_at"),
                 )
             )
             .annotate(
