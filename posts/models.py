@@ -1,11 +1,7 @@
-from functools import partial
-
 from cloudinary.models import CloudinaryField
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from DjangoGramm.settings import PICTURES
-from DjangoGramm.utils import directory_path
 from auths.models import User
 
 

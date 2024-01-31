@@ -2,14 +2,12 @@ from io import BytesIO
 
 from PIL import Image
 
-from django.contrib.messages import get_messages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 from django.urls import reverse
 
 from auths.models import User
 from posts.models import Post, Hashtag, Photo
-from DjangoGramm.text_messages import UNLIKE_IT_MSG, LIKE_IT_MSG
 
 
 class PostsViewTests(TestCase):

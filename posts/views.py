@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, OuterRef, Exists, Prefetch
+from django.db.models import OuterRef, Exists, Prefetch
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse_lazy

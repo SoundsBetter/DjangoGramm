@@ -1,9 +1,6 @@
-from functools import partial
 from django.db import models
 from cloudinary.models import CloudinaryField
 
-from DjangoGramm.settings import AVATARS
-from DjangoGramm.utils import directory_path
 from auths.models import User
 
 
