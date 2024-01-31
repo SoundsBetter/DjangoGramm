@@ -15,9 +15,9 @@ class UserProfile(models.Model):
         null=True,
     )
     # avatar = CloudinaryField("avatar", null=True)
-    # date_of_birth = models.DateField(
-    #     blank=True, null=True, verbose_name="Date of birth"
-    # )
+    date_of_birth = models.DateField(
+        blank=True, null=True, verbose_name="Date of birth"
+    )
     phone_number = models.CharField(
         max_length=17,
         blank=True,
