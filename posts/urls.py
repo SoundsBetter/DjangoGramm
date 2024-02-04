@@ -45,11 +45,6 @@ urlpatterns = [
         name="like_post",
     ),
     path(
-        "check_like/<int:pk>/",
-        views.CheckLikeView.as_view(),
-        name="check_like",
-    ),
-    path(
         "add_comment/<int:post_id>/",
         views.AddCommentView.as_view(),
         name="add_comment",

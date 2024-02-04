@@ -277,16 +277,3 @@ class LikePostView(LoginRequiredMixin, View):
             response_data["liked"] = True
         response_data["likes_count"] = post.likes.count()
         return JsonResponse(response_data)
-
-
-class CheckLikeView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        post = Post.objects.get(pk=pk)
-        response_data = {"liked": False}
-        try:
-            Like.objects.get(post=post, user=request.user)
-            response_data["liked"] = True
-
-        except Like.DoesNotExist:
-            pass
-        return JsonResponse(response_data)
