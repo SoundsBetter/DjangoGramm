@@ -22,11 +22,6 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-    def delete(self, *args, **kwargs):
-        file = self.avatar
-        super().delete(*args, **kwargs)
-        file.delete(save=False)
-
 
 class Follower(models.Model):
     follower = models.ForeignKey(
