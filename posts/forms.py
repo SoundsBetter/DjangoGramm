@@ -1,6 +1,7 @@
 from django import forms
+from cloudinary.forms import CloudinaryFileField
 
-from posts.models import Post, Photo
+from posts.models import Post, Photo, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -12,18 +13,36 @@ class PostForm(forms.ModelForm):
 
 
 class PhotoForm(forms.ModelForm):
+    picture = CloudinaryFileField()
+
     class Meta:
         model = Photo
-        fields = ("picture",)
+        fields = ["picture"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["picture"].options = {"tags": "photo", "format": "png"}
 
 
 class PhotoFormEdit(forms.ModelForm):
-    picture = forms.ImageField(required=False)
+    picture = CloudinaryFileField(required=False)
 
     class Meta:
         model = Photo
         fields = ("picture",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["picture"].options = {"tags": "photo", "format": "png"}
 
 
 class HashtagForm(forms.Form):
     hashtags = forms.CharField(max_length=50, required=False)
+
+
+class CommentForm(forms.ModelForm):
+    content = forms.CharField(label="comment")
+
+    class Meta:
+        model = Comment
+        fields = ("content",)

@@ -1,21 +1,31 @@
 {% extends "base.html" %}
 {% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load socialaccount %}
 
 {% block content %}
     <div class="container mt-5">
         <div class="row">
-            <div class="col-6 mx-auto">
+            <div class="col-sm-12 col-md-6 mx-auto">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title text-center">Log in</h3>
-                        <form method="post">
+                        <form method="post" action="{% url 'auths:login' %}">
                             {% csrf_token %}
-                            {{ form.username|as_crispy_field }}
-                            {{ form.password|as_crispy_field }}
-                            <button type="submit" class="btn btn-primary">
-                                Log in
+                            {{ form|crispy }}
+                            <button type="submit" class="btn btn-primary">Log
+                                in
                             </button>
                         </form>
+                        <hr>
+                        <p class="text-center">Or log in with:</p>
+                        <p class="text-center"><a
+                                href="{% provider_login_url 'google' %}"
+                                class="btn btn-danger me-5"><i class="fa-brands fa-google"></i> Google</a><a
+                                href="{% provider_login_url 'github' %}"
+                                class="btn btn-secondary"><i class="fa-brands fa-github"></i> Github</a>
+                        </p>
+                        {% providers_media_js %}
                     </div>
                 </div>
             </div>

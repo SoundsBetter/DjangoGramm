@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Exists, Prefetch
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse_lazy
@@ -14,8 +14,14 @@ from django.views.generic import (
 )
 
 from auths.models import User
-from posts.forms import PostForm, PhotoForm, PhotoFormEdit, HashtagForm
-from posts.models import Post, Photo, Like
+from posts.forms import (
+    PostForm,
+    PhotoForm,
+    PhotoFormEdit,
+    HashtagForm,
+    CommentForm,
+)
+from posts.models import Post, Photo, Like, Comment
 from DjangoGramm.text_messages import (
     POST_CREATED_SUCCESS_MSG,
     POST_CREATED_DENIED_MSG,
@@ -141,12 +147,10 @@ class PostsListView(LoginRequiredMixin, ListView):
         user_id = self.request.GET.get("user")  # type: ignore
 
         if user_id:
-            try:
-                user = User.objects.get(pk=user_id)
-            except User.DoesNotExist:
-                user = None
+            user = get_object_or_404(User, pk=user_id)
             context["profile_user"] = user
         context["feed_name"] = "All posts"
+        context["comment_form"] = CommentForm()
         return context
 
     def get_template_names(self):
@@ -159,33 +163,28 @@ class PostsListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = (
-            queryset.select_related("user__userprofile")
-            .prefetch_related("photos", "hashtags")
-            .annotate(likes_count=Count("likes"))
+            queryset.select_related("user", "user__userprofile")
+            .prefetch_related("photos", "hashtags", "likes")
             .order_by("-created_at")
+        )
+        likes = Like.objects.filter(user=self.request.user, post=OuterRef("pk"))
+        comment_prefetch = Prefetch(
+            "comments",
+            queryset=Comment.objects.select_related("user__userprofile"),
+        )
+        queryset = queryset.prefetch_related(comment_prefetch).annotate(
+            user_like_it=Exists(likes)
         )
         hashtag, user_id = self._get_query_params()
         if hashtag:
-            queryset = (
-                queryset.filter(hashtags__name=hashtag)
-                .select_related("user__userprofile")
-                .prefetch_related("photos", "hashtags")
-                .annotate(likes_count=Count("likes"))
-                .order_by("-created_at")
-            )
+            queryset = queryset.filter(hashtags__name=hashtag)
         elif user_id:
             try:
                 user_id = int(user_id)
             except ValueError as ex:
                 messages.error(BAD_REQUEST, ex)
                 return redirect("home")
-            queryset = (
-                queryset.filter(user__id=user_id)
-                .select_related("user__userprofile")
-                .prefetch_related("photos", "hashtags")
-                .annotate(likes_count=Count("likes"))
-                .order_by("-created_at")
-            )
+            queryset = queryset.filter(user__id=user_id)
         return queryset
 
 
@@ -203,8 +202,22 @@ class PostsFollowingListView(LoginRequiredMixin, ListView):
         queryset = (
             queryset.filter(user__in=followed_users)
             .select_related("user__userprofile")
-            .prefetch_related("photos", "hashtags")
-            .annotate(likes_count=Count("likes"))
+            .prefetch_related("photos", "hashtags", "likes")
+            .prefetch_related(
+                Prefetch(
+                    "comments",
+                    queryset=Comment.objects.select_related(
+                        "user__userprofile"
+                    ),
+                )
+            )
+            .annotate(
+                user_like_it=Exists(
+                    Like.objects.filter(
+                        user=self.request.user, post=OuterRef("pk")
+                    )
+                )
+            )
             .order_by("-created_at")
         )
         return queryset
@@ -213,6 +226,26 @@ class PostsFollowingListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["feed_name"] = "Following"
         return context
+
+
+class AddCommentView(LoginRequiredMixin, View):
+    def post(self, request, post_id):
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.user = request.user
+            comment.post = get_object_or_404(Post, pk=post_id)
+            comment.save()
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "message": "Comment added",
+                    "username": request.user.username,
+                    "comment": comment.content,
+                }
+            )
+        else:
+            return JsonResponse({"status": "error", "message": "Invalid form"})
 
 
 class DeletePost(UserIsOwnerMixin, LoginRequiredMixin, DeleteView):

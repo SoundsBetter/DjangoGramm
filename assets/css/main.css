@@ -101,3 +101,38 @@
     border-radius: 50%; /* Додає круглу форму */
     background-color: #fff; /* Білий колір фону для індикаторів */
 }
+
+.icon-size {
+    font-size: large; /* Початковий розмір іконки */
+}
+
+/* Медіа-запити для зменшення іконок на певних розмірах екрану */
+@media (max-width: 1200px) {
+    .icon-size {
+        font-size: medium; /* Трохи менший розмір на середніх екранах */
+    }
+}
+
+@media (max-width: 768px) {
+    .icon-size {
+        font-size: small; /* Ще менший розмір на малих екранах */
+    }
+}
+
+@media (max-width: 480px) {
+    .icon-size {
+        font-size: x-small; /* Дуже маленький розмір на дуже малих екранах */
+    }
+}
+
+.post-container {
+    width: 575px; /* Фіксована ширина для великих екранів */
+    margin: 0 auto; /* Центрування контейнера */
+}
+
+@media (max-width: 570px) {
+    .post-container {
+        width: 100%; /* Повна ширина для мобільних екранів */
+        padding-left: 6px;
+    }
+}

@@ -1,3 +1,7 @@
+{% load static %}
+{% load crispy_forms_filters %}
+{% load cloudinary %}
+
 <h6>{{ post.caption }}</h6>
 {% if post.photos.all.count > 1 %}
     <div id="PostCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -13,20 +17,9 @@
         <div class="carousel-inner">
             {% for photo in post.photos.all %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img src="
-
-
-
-
-
-
-
-
-
-                            {% if photo.picture %}{{ photo.picture.url }}{% endif %}"
-                         alt=""
+                    <img src="{{ photo.picture.url }}" alt=""
                          class="img-fluid"
-                         style="width: 550px; height: 550px; object-fit: cover;">
+                         style="max-width: 100%; width: 550px; height: 550px; object-fit: cover;">
                 </div>
             {% endfor %}
         </div>
@@ -45,10 +38,9 @@
     </div>
 {% else %}
     {% for photo in post.photos.all %}
-        <img src="{% if photo.picture %}{{ photo.picture.url }}{% endif %}"
-             alt=""
+        <img src="{{ photo.picture.url }}" alt=""
              class="img-fluid"
-             style="width: 550px; height: 550px; object-fit: cover;">
+             style="max-width: 100%; width: 550px; height: 550px; object-fit: cover;">
     {% endfor %}
 {% endif %}
 
@@ -58,12 +50,15 @@
             class="hashtag">#{{ hashtag.name }}</span></a>
 {% endfor %}
 <p class="like-count"
-   data-post-id="{{ post.pk }}">{{ post.likes_count }} likes</p>
+   data-post-id="{{ post.pk }}">{{ post.likes.count }} likes</p>
 
 <div class="d-flex mb-3">
     <button type="button" data-id="{{ post.pk }}"
             class="like-btn btn btn-lg custom-btn me-2">
-        <i class="fa-regular fa-heart"></i>
+        {% if post.user_like_it %}
+            <i class="fa-solid fa-heart"
+               style="color: #ff3040"></i>{% else %}
+            <i class="fa-regular fa-heart"></i>{% endif %}
     </button>
     <a href="{% url 'posts:post_detail' post.pk %}"
        class="btn btn-lg custom-btn me-2"><i
@@ -74,4 +69,34 @@
             <i class="fa-solid fa-gear"></i>
         </a>
     {% endif %}
+</div>
+
+<form class="comment-form" data-post-id="{{ post.id }}" method="post"
+      action="{% url 'posts:add_comment' post.pk %}">
+    {% csrf_token %}
+    <div>{{ comment_form|crispy }}</div>
+    <button type="button" class="submit-comment btn btn-primary small mb-3">Add
+        Comment
+    </button>
+</form>
+
+<div class="comments-container">
+    {% for comment in post.comments.all %}
+        <div class="row align-items-center">
+            <div class="col-1 mb-auto"><a
+                    href="{% url 'posts:post_list' %}?user={{ comment.user.id }}"><img
+                    class="rounded-circle"
+                    style="width: 30px; height: auto;"
+                    src="{% if comment.user.userprofile.avatar %}{{ comment.user.userprofile.avatar.url }}{% else %}{% static 'images/no_avatar.jpg' %}{% endif %}"
+                    alt=""></a></div>
+            <div class="col-sm-11">
+                <p style="font-size: small">
+                    <b>{{ comment.user.username }}: </b>{{ comment.content }}
+                </p>
+                <p style="font-size: x-small; color: grey">
+                    {{ comment.created_at }}
+                </p>
+            </div>
+        </div>
+    {% endfor %}
 </div>

@@ -13,19 +13,39 @@
                         class="rounded-circle p-3"
                         style="width: 100px; height: 100px;">
                 <h4 class="text-center">{{ profile_user }}</h4>
-            {% if profile_user.pk != user.pk %}
-                <button type="button" data-id="{{ profile_user.pk }}"
-                        class="follow-btn ms-3"><i
-                        class="fa-regular fa-circle-check"></i>
-                </button>
-            {% endif %}
+                {% if profile_user.pk != user.pk %}
+                    <button type="button" data-id="{{ profile_user.pk }}"
+                            class="follow-btn ms-3"><i
+                            class="fa-regular fa-circle-check"></i>
+                    </button>
+                {% endif %}
             </div>
-            {% for post in posts %}
-                <div class="col-sm-12 col-md-6 col-lg-4"
-                     style="max-width: 575px">
-                    {% include 'posts/includes/single_post.html' %}
+            {% if profile_user.userprofile.bio %}
+                <div class="d-flex align-items-center justify-content-center mb-5">
+                    <div id="short_bio"><b>About
+                        me: </b>{{ profile_user.userprofile.bio|slice:":100"|linebreaksbr}}...
+                    </div>
+                    <div id="full_bio"
+                         style="display:none;"><b>About
+                        me: </b>{{ profile_user.userprofile.bio|linebreaksbr }}</div>
+                    <button type="button" class="btn"
+                            onclick="toggleBio()"><i id="toggleIcon"
+                                                     class="fa-solid fa-caret-down"></i>
+                    </button>
                 </div>
-            {% endfor %}
+            {% endif %}
+            {% if posts|length > 0 %}
+                {% for post in posts %}
+                    <div class="col-sm-12 col-md-6 col-lg-4"
+                         style="max-width: 575px">
+                        {% include 'posts/includes/single_post.html' %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h5 class="text-center mt-5">no posts yet <i
+                        class="fa-regular fa-face-frown-open ms-2"
+                        style="font-size: x-large"></i></h5>
+            {% endif %}
         </div>
     </div>
 

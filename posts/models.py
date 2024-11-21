@@ -1,5 +1,6 @@
 from functools import partial
 
+from cloudinary.models import CloudinaryField
 from django.db import models
 from django.db.models import UniqueConstraint
 
@@ -25,9 +26,7 @@ class Photo(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name="photos"
     )
-    picture = models.ImageField(
-        upload_to=partial(directory_path, base_folder=PICTURES)
-    )
+    picture = CloudinaryField("picture")
 
     def delete(self, *args, **kwargs):
         file = self.picture
@@ -50,3 +49,13 @@ class Like(models.Model):
         constraints = [
             UniqueConstraint(fields=["post", "user"], name="user_like_post")
         ]
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(
+        "Post", related_name="comments", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    content = models.TextField(max_length=280, blank=False)

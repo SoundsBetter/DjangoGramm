@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load socialaccount %}
+{% load i18n %}
+{% load allauth %}
+
+{% block content %}
+    <div class="d-flex justify-content-center mt-5">
+        <div class="card p-5 text-center">
+            {% if process == "connect" %}
+                <div class="card-title">
+                    <h1>
+                        {% blocktrans with provider.name as provider %}Connect
+                            {{ provider }}{% endblocktrans %}
+                    </h1>
+                </div>
+                <p>
+                    {% blocktrans with provider.name as provider %}You are
+                        about
+                        to
+                        connect a new third-party account from
+                        {{ provider }}
+                        .{% endblocktrans %}
+                </p>
+            {% else %}
+                <div class="card-title">
+                    <h1>
+                        {% blocktrans with provider.name as provider %}Sign In
+                            Via
+                            {{ provider }}{% endblocktrans %}
+                    </h1>
+                </div>
+
+                <p>
+                    {% blocktrans with provider.name as provider %}You are
+                        about
+                        to
+                        sign in using a third-party account from
+                        {{ provider }}
+                        .{% endblocktrans %}
+                </p>
+            {% endif %}
+
+            <form class="" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-primary" type="submit">Continue
+                    </button>
+                </form>
+        </div>
+    </div>
+{% endblock content %}
